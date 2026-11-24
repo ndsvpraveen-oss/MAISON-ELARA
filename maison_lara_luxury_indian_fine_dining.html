@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON ÉLARA — Contemporary Indian Luxury Fine Dining</title>
+  <meta name="description" content="Where every moment becomes an experience. Contemporary Indian heritage blended with international luxury hospitality." />
+
+  <!-- Google Fonts: Cormorant Garamond & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: '#171613',
+            charcoal: '#211F1A',
+            gold: '#B99A64',
+            ivory: '#F2EBDD',
+            espresso: '#51443A',
+            bronze: '#806747',
+            muted: '#A9A193',
+            burgundy: '#542B2D',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          letterSpacing: {
+            editorial: '0.24em',
+            luxury: '0.16em',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Three.js r128 via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    /* =========================================================================
+       MAISON ÉLARA — PHASE 1 DESIGN SYSTEM & EDITORIAL MOTION TOKENS
+       ========================================================================= */
+    :root {
+      --bg-midnight: #171613;
+      --bg-charcoal: #211F1A;
+      --accent-gold: #B99A64;
+      --bg-ivory: #F2EBDD;
+      --text-espresso: #51443A;
+      --accent-bronze: #806747;
+      --text-muted: #A9A193;
+      --accent-burgundy: #542B2D;
+    }
+
+    html {
+      background-color: #171613;
+      color: #F2EBDD;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      overflow-x: hidden;
+      background-color: #171613;
+    }
+
+    /* Subtle architectural paper/stone grain overlay */
+    .luxury-grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.032;
+      background-image: radial-gradient(rgba(185, 154, 100, 0.55) 0.5px, transparent 0.5px);
+      background-size: 4px 4px;
+      z-index: 1;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #171613;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(185, 154, 100, 0.35);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(185, 154, 100, 0.65);
+    }
+
+    /* Preloader transition */
+    #preloader {
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.9s ease;
+    }
+    #preloader.hidden-preloader {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #preloader-bar {
+      transition: width 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Scroll reveal choreography */
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+    .reveal-delay-3 { transition-delay: 0.36s; }
+
+    /* Hero typography stagger */
+    .hero-stagger {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1), transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    body.loaded .hero-stagger {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scroll indicator pulse */
+    @keyframes scrollDrop {
+      0% { transform: translateY(-100%); opacity: 0; }
+      30% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(100%); opacity: 0; }
+    }
+    .scroll-line-anim {
+      animation: scrollDrop 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    /* Refined underline link hover */
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 1px;
+      background-color: #B99A64;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .nav-link:hover::after,
+    .nav-link:focus-visible::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* Controlled 3D tilt container */
+    .tilt-frame {
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+      will-change: transform;
+    }
+
+    /* Experience crossfade */
+    .exp-fade {
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Editorial chiaroscuro photography grading for cohesive luxury warmth */
+    .editorial-photo {
+      filter: contrast(1.06) saturate(0.92) brightness(0.93);
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease, opacity 0.6s ease;
+    }
+    .group:hover .editorial-photo,
+    .tilt-frame:hover .editorial-photo {
+      filter: contrast(1.08) saturate(1.0) brightness(0.98);
+    }
+
+    /* Accessible focus ring */
+    :focus-visible {
+      outline: 1.5px solid #B99A64;
+      outline-offset: 3px;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .hero-stagger, .exp-fade, .tilt-frame {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+      .scroll-line-anim {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-midnight text-ivory selection:bg-gold/30 selection:text-ivory">
+
+  <!-- =========================================================================
+       SCROLL PROGRESS BAR (2px Antique Champagne Gold)
+       ========================================================================= -->
+  <div id="scroll-progress-track" class="fixed top-0 left-0 w-full h-[2px] z-[70] pointer-events-none bg-transparent">
+    <div id="scroll-progress-bar" class="h-full w-0 bg-gold transition-[width] duration-75 ease-out"></div>
+  </div>
+
+  <!-- =========================================================================
+       1. CINEMATIC PRELOADER
+       ========================================================================= -->
+  <div id="preloader" class="fixed inset-0 z-[100] bg-midnight flex flex-col items-center justify-center px-6" aria-hidden="false">
+    <div class="text-center max-w-md w-full">
+      <p class="font-sans text-[10px] uppercase tracking-[0.38em] text-gold/80 mb-4">Contemporary Indian Gastronomy</p>
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.28em] text-ivory uppercase">
+        MAISON ÉLARA
+      </h1>
+      <div class="mt-8 w-48 sm:w-56 h-[1px] bg-gold/20 mx-auto overflow-hidden">
+        <div id="preloader-bar" class="h-full w-0 bg-gold"></div>
+      </div>
+      <p class="mt-5 font-serif italic text-sm text-muted tracking-wider">Where every moment becomes an experience.</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       2. FLOATING NAVIGATION BAR
+       ========================================================================= -->
+  <header id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out border-b border-transparent">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 h-20 sm:h-24 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#home" class="group flex flex-col focus:outline-none" aria-label="MAISON ÉLARA Home">
+        <span class="font-serif text-xl sm:text-2xl tracking-[0.26em] text-ivory font-normal group-hover:text-gold transition-colors">
+          MAISON ÉLARA
+        </span>
+        <span class="font-sans text-[9px] tracking-[0.32em] uppercase text-gold/80 mt-0.5">
+          New Delhi &middot; Est. MMXXIV
+        </span>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden lg:flex items-center space-x-8" aria-label="Primary Navigation">
+        <a href="#home" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Home</a>
+        <a href="#our-story" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Our Story</a>
+        <a href="#the-menu" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">The Menu</a>
+        <a href="#experiences" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Experiences</a>
+        <a href="#gallery" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Gallery</a>
+        <a href="#reservations" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Reservations</a>
+        <a href="#contact" class="nav-link font-sans text-xs uppercase tracking-[0.18em] text-ivory/90 hover:text-ivory transition-colors">Contact</a>
+      </nav>
+
+      <!-- Desktop Right Controls: Wishlist & Reserve CTA -->
+      <div class="hidden lg:flex items-center space-x-5">
+        <button id="open-wishlist-btn" type="button" class="relative p-2 text-ivory/80 hover:text-gold transition-colors" aria-label="View Saved Dishes">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          <span id="nav-wishlist-badge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-gold text-midnight text-[9px] font-medium flex items-center justify-center">0</span>
+        </button>
+
+        <a href="#reservations" class="px-6 py-2.5 border border-gold/70 text-gold hover:bg-gold hover:text-midnight transition-all duration-300 font-sans text-[11px] uppercase tracking-[0.2em] rounded-sm">
+          Reserve
+        </a>
+      </div>
+
+      <!-- Mobile Controls -->
+      <div class="flex lg:hidden items-center space-x-3">
+        <button id="mobile-wishlist-btn" type="button" class="relative p-2 text-ivory/85" aria-label="View Saved Dishes">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          <span id="mobile-wishlist-badge" class="hidden absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-gold text-midnight text-[9px] font-medium flex items-center justify-center">0</span>
+        </button>
+
+        <button id="mobile-menu-toggle" type="button" class="p-2.5 text-ivory hover:text-gold transition-colors" aria-label="Open Navigation Menu" aria-expanded="false">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 7.5h16.5M3.75 12h16.5M8.25 16.5h12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Fullscreen Cinematic Mobile Drawer -->
+  <div id="mobile-drawer" class="fixed inset-0 z-[60] bg-midnight/98 backdrop-blur-xl flex flex-col justify-between p-8 opacity-0 pointer-events-none transition-opacity duration-500" aria-hidden="true">
+    <div class="flex items-center justify-between border-b border-gold/20 pb-5">
+      <div>
+        <span class="font-serif text-xl tracking-[0.26em] text-ivory">MAISON ÉLARA</span>
+        <p class="font-sans text-[9px] uppercase tracking-[0.28em] text-gold/80 mt-0.5">Contemporary Indian Luxury</p>
+      </div>
+      <button id="mobile-menu-close" type="button" class="p-2 text-ivory hover:text-gold transition-colors" aria-label="Close Navigation Menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <nav class="flex flex-col space-y-5 my-auto py-8" aria-label="Mobile Navigation">
+      <a href="#home" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Home</a>
+      <a href="#our-story" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Our Story</a>
+      <a href="#the-menu" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">The Menu</a>
+      <a href="#experiences" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Experiences</a>
+      <a href="#gallery" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Gallery</a>
+      <a href="#reservations" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Reservations</a>
+      <a href="#contact" class="mobile-nav-link font-serif text-3xl text-ivory hover:text-gold transition-all duration-300 translate-y-4 opacity-0">Contact</a>
+    </nav>
+
+    <div class="border-t border-gold/20 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <a href="#reservations" class="mobile-nav-cta w-full sm:w-auto text-center px-8 py-3.5 bg-gold text-midnight font-sans text-xs uppercase tracking-[0.22em] font-medium rounded-sm">
+        Reserve Your Table
+      </a>
+      <p class="font-serif italic text-sm text-muted">Tuesday – Sunday &middot; 19:00 – 23:30</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       3. CINEMATIC 3D HERO EXPERIENCE (Three.js)
+       ========================================================================= -->
+  <section id="home" class="relative w-full min-h-screen flex items-center overflow-hidden bg-midnight">
+    <!-- Full-viewport Three.js WebGL Canvas -->
+    <div id="hero-canvas-container" class="absolute inset-0 w-full h-full z-0">
+      <canvas id="hero-3d-canvas" class="block w-full h-full"></canvas>
+    </div>
+
+    <!-- Subtle Editorial Vignette & Gradient for Legibility -->
+    <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-midnight/92 via-midnight/58 to-transparent"></div>
+    <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-midnight via-transparent to-midnight/45"></div>
+
+    <!-- Subtle Jaali Architectural Corner Hairline -->
+    <svg class="hidden md:block absolute top-28 right-10 w-24 h-24 text-gold/20 z-10 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.6" aria-hidden="true">
+      <path d="M50 4 L96 50 L50 96 L4 50 Z" />
+      <path d="M50 18 L82 50 L50 82 L18 50 Z" />
+      <circle cx="50" cy="50" r="10" />
+      <line x1="50" y1="4" x2="50" y2="96" />
+      <line x1="4" y1="50" x2="96" y2="50" />
+    </svg>
+
+    <!-- Left-Aligned Editorial Overlay -->
+    <div class="relative z-20 max-w-7xl mx-auto w-full px-6 sm:px-10 lg:px-12 pt-28 pb-24">
+      <div class="max-w-xl lg:max-w-2xl">
+        <div class="hero-stagger flex items-center space-x-4 mb-6" style="transition-delay: 0.15s;">
+          <span class="w-10 h-[1px] bg-gold"></span>
+          <span class="font-sans text-[11px] uppercase tracking-[0.34em] text-gold">MAISON ÉLARA</span>
+        </div>
+
+        <h1 class="hero-stagger font-serif font-light text-5xl sm:text-6xl md:text-7xl lg:text-[5.25rem] leading-[1.03] tracking-tight text-ivory" style="transition-delay: 0.3s;">
+          An Indian Soul.<br />
+          <span class="italic font-light text-ivory/95">A World of Elegance.</span>
+        </h1>
+
+        <p class="hero-stagger mt-7 font-sans font-light text-sm sm:text-base md:text-[17px] leading-relaxed text-muted max-w-lg" style="transition-delay: 0.48s;">
+          Where India's rich culinary heritage meets contemporary artistry, creating moments worth remembering.
+        </p>
+
+        <div class="hero-stagger mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4" style="transition-delay: 0.65s;">
+          <a href="#the-menu" class="inline-flex items-center justify-center px-8 py-4 bg-gold text-midnight hover:bg-ivory transition-colors duration-300 font-sans text-xs uppercase tracking-[0.22em] font-medium rounded-sm">
+            Explore Our Menu
+          </a>
+          <a href="#reservations" class="inline-flex items-center justify-center px-8 py-4 border border-gold/60 text-ivory hover:border-gold hover:text-gold transition-colors duration-300 font-sans text-xs uppercase tracking-[0.22em] rounded-sm backdrop-blur-sm bg-midnight/30">
+            Reserve Your Table
+          </a>
+        </div>
+
+        <!-- Subtle 3D Scene Caption -->
+        <div class="hero-stagger mt-12 hidden sm:flex items-center space-x-3 text-[11px] font-sans tracking-[0.18em] uppercase text-muted/80" style="transition-delay: 0.85s;">
+          <span class="w-1.5 h-1.5 rounded-full bg-gold/80"></span>
+          <span>Interactive Table Composition &middot; Move cursor to shift perspective</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animated Vertical Scroll Indicator -->
+    <a href="#our-story" aria-label="Scroll to Our Story" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 group">
+      <span class="font-sans text-[9px] uppercase tracking-[0.3em] text-muted group-hover:text-gold transition-colors">Scroll</span>
+      <div class="w-[1px] h-12 bg-gold/25 overflow-hidden relative">
+        <div class="w-full h-1/2 bg-gold scroll-line-anim"></div>
+      </div>
+    </a>
+  </section>
+
+  <!-- =========================================================================
+       4. OUR STORY — WARM IVORY EDITORIAL SECTION (#F2EBDD)
+       ========================================================================= -->
+  <section id="our-story" class="relative bg-ivory text-midnight py-24 sm:py-32 lg:py-36 overflow-hidden">
+    <!-- Subtle Architectural Jaali SVG Watermark -->
+    <svg class="absolute -left-24 top-16 w-80 h-80 text-bronze/10 pointer-events-none" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.7" aria-hidden="true">
+      <rect x="20" y="20" width="160" height="160" transform="rotate(45 100 100)" />
+      <rect x="45" y="45" width="110" height="110" />
+      <circle cx="100" cy="100" r="35" />
+      <path d="M100 10 L100 190 M10 100 L190 100" />
+    </svg>
+
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
+      <!-- Asymmetric Editorial Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-center">
+        <!-- Left Visual Composition (Art-Directed Architectural Arch Canvas + Jaali Frame) -->
+        <div class="lg:col-span-5 reveal">
+          <div class="relative p-3 sm:p-4 border border-bronze/35 rounded-sm bg-ivory">
+            <div class="relative aspect-[4/5] w-full overflow-hidden bg-midnight rounded-sm group">
+              <img
+                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85"
+                alt="Candlelit luxury fine-dining room at MAISON ÉLARA"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/960x1200/211F1A/B99A64?text=MAISON+ELARA';"
+                class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 via-midnight/15 to-transparent pointer-events-none"></div>
+              <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between text-ivory">
+                <div>
+                  <p class="font-sans text-[9px] uppercase tracking-[0.28em] text-gold">Architectural Study I</p>
+                  <p class="font-serif italic text-lg text-ivory/95 mt-0.5">The Candlelit Heritage Dining Hall</p>
+                </div>
+                <span class="font-serif text-xs tracking-widest text-gold/80">01 / 04</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Editorial Narrative -->
+        <div class="lg:col-span-7 reveal reveal-delay-1">
+          <div class="flex items-center space-x-3 mb-5">
+            <span class="w-8 h-[1px] bg-bronze"></span>
+            <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-bronze">Our Philosophy</span>
+          </div>
+
+          <h2 class="font-serif text-4xl sm:text-5xl lg:text-[3.5rem] font-normal leading-[1.08] text-midnight">
+            Rooted in Heritage.<br />
+            <span class="italic text-espresso">Crafted for Today.</span>
+          </h2>
+
+          <div class="mt-8 space-y-5 font-sans font-light text-[15px] sm:text-base leading-[1.85] text-espresso">
+            <p>
+              For centuries, the royal kitchens of Awadh, Rajputana, and Hyderabad treated dining as an act of statecraft and devotion. Recipes were whispered across generations—measured not in minutes, but in the patience of slow-burning charcoal, hand-pounded saffron, and copper vessels sealed with dough.
+            </p>
+            <p>
+              At <span class="font-medium text-midnight">MAISON ÉLARA</span>, we honor that lineage with contemporary restraint. Each course is stripped of excess and elevated through modern culinary precision—allowing single-origin Indian spices, heirloom grains, and delicate smoke infusions to speak with clarity.
+            </p>
+          </div>
+
+          <!-- Editorial Quote -->
+          <blockquote class="mt-9 pl-6 border-l border-gold/80">
+            <p class="font-serif italic text-xl sm:text-2xl text-midnight leading-snug">
+              "True luxury is never loud. It lives in the warmth of hand-hammered brass, the hush of a candlelit room, and the memory of a spice toasted at dawn."
+            </p>
+            <footer class="mt-3 font-sans text-[11px] uppercase tracking-[0.22em] text-bronze">
+              &mdash; Chef-Patron &amp; Culinary Direction, Maison Élara
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+
+      <!-- Three Restrained Craftsmanship Pillars -->
+      <div class="mt-24 pt-14 border-t border-bronze/25 grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
+        <div class="reveal">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-serif text-2xl text-bronze">01</span>
+            <span class="w-12 h-[1px] bg-gold/60"></span>
+          </div>
+          <h3 class="font-serif text-2xl text-midnight mb-3">Heritage Spices</h3>
+          <p class="font-sans font-light text-sm leading-relaxed text-espresso">
+            Pampore saffron, Tellicherry peppercorns, and wild Nagaland cardamom sourced directly from small family estates and stone-ground fresh each afternoon.
+          </p>
+        </div>
+
+        <div class="reveal reveal-delay-1 md:border-l md:border-bronze/20 md:pl-10">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-serif text-2xl text-bronze">02</span>
+            <span class="w-12 h-[1px] bg-gold/60"></span>
+          </div>
+          <h3 class="font-serif text-2xl text-midnight mb-3">Slow-Fire Technique</h3>
+          <p class="font-sans font-light text-sm leading-relaxed text-espresso">
+            Mastery of traditional <em class="font-serif italic text-base">dum pukht</em>, clay-oven tandoor embers, and twelve-hour reductions paired with exact temperature discipline.
+          </p>
+        </div>
+
+        <div class="reveal reveal-delay-2 md:border-l md:border-bronze/20 md:pl-10">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-serif text-2xl text-bronze">03</span>
+            <span class="w-12 h-[1px] bg-gold/60"></span>
+          </div>
+          <h3 class="font-serif text-2xl text-midnight mb-3">Contemporary Plating</h3>
+          <p class="font-sans font-light text-sm leading-relaxed text-espresso">
+            Presented on custom matte stoneware and brushed antique brass—marrying architectural symmetry with the soulful warmth of Indian hospitality.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. SIGNATURE CULINARY EXPERIENCE (Midnight Black #171613)
+       ========================================================================= -->
+  <section id="signatures" class="relative bg-midnight text-ivory py-24 sm:py-32 lg:py-36 luxury-grain">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-14 border-b border-gold/20 reveal">
+        <div>
+          <div class="flex items-center space-x-3 mb-4">
+            <span class="w-8 h-[1px] bg-gold"></span>
+            <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-gold">Culinary Artistry</span>
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl lg:text-[3.5rem] font-light text-ivory">
+            Signature <span class="italic text-gold">Creations</span>
+          </h2>
+        </div>
+        <p class="font-sans font-light text-sm text-muted max-w-md leading-relaxed">
+          Four emblematic expressions of our kitchen—each composed as an intimate study in texture, aroma, and regional heritage.
+        </p>
+      </div>
+
+      <!-- Alternating Editorial Showcase (Rendered dynamically with Chiaroscuro Canvases) -->
+      <div id="signature-dishes-container" class="mt-16 space-y-24 lg:space-y-32"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. THE MENU — INTERACTIVE FINE-DINING DIGITAL MENU (Warm Ivory #F2EBDD)
+       ========================================================================= -->
+  <section id="the-menu" class="relative bg-ivory text-midnight py-24 sm:py-32 lg:py-36">
+    <div class="max-w-6xl mx-auto px-6 sm:px-10 lg:px-12">
+      <!-- Printed Fine-Dining Header -->
+      <div class="text-center max-w-2xl mx-auto reveal">
+        <p class="font-sans text-[11px] uppercase tracking-[0.32em] text-bronze mb-3">La Carte &middot; Evening Service</p>
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-midnight">The Menu</h2>
+        <div class="mt-5 flex items-center justify-center space-x-4">
+          <span class="w-16 h-[1px] bg-bronze/40"></span>
+          <svg class="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M12 2L22 12L12 22L2 12L12 2Z" />
+          </svg>
+          <span class="w-16 h-[1px] bg-bronze/40"></span>
+        </div>
+        <p class="mt-5 font-serif italic text-lg text-espresso">
+          Curated seasonal plates designed for unhurried conversation and royal indulgence.
+        </p>
+      </div>
+
+      <!-- Menu Controls: Search + Dietary Pills -->
+      <div class="mt-14 p-6 sm:p-8 border border-bronze/25 bg-ivory/60 rounded-sm reveal">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <!-- Search Input -->
+          <div class="relative flex-1 max-w-md">
+            <svg class="w-4 h-4 text-bronze absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+            </svg>
+            <input
+              id="menu-search"
+              type="text"
+              placeholder="Search dishes, spices, or regions..."
+              aria-label="Search menu"
+              class="w-full pl-10 pr-4 py-2.5 bg-transparent border-b border-bronze/40 focus:border-midnight focus:outline-none font-sans text-sm text-midnight placeholder:text-espresso/60 transition-colors"
+            />
+          </div>
+
+          <!-- Dietary Filter Pills -->
+          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Dietary Filters">
+            <button data-diet="All" class="diet-pill active px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] font-sans rounded-sm border border-midnight bg-midnight text-ivory transition-colors">All</button>
+            <button data-diet="Vegetarian" class="diet-pill px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] font-sans rounded-sm border border-bronze/35 text-espresso hover:border-midnight transition-colors">Vegetarian</button>
+            <button data-diet="Chef's Selection" class="diet-pill px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] font-sans rounded-sm border border-bronze/35 text-espresso hover:border-midnight transition-colors">Chef's Selection</button>
+            <button data-diet="Gluten-Free" class="diet-pill px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] font-sans rounded-sm border border-bronze/35 text-espresso hover:border-midnight transition-colors">Gluten-Free</button>
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div id="menu-category-tabs" class="mt-7 pt-5 border-t border-bronze/20 flex flex-wrap gap-x-6 gap-y-3" role="tablist" aria-label="Menu Categories">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Printed Luxury Menu Sheet -->
+      <div class="mt-10 border border-bronze/30 p-6 sm:p-10 lg:p-14 bg-[#F5EFE3] shadow-sm rounded-sm relative">
+        <!-- Inner fine hairline frame -->
+        <div class="absolute inset-2.5 border border-bronze/15 pointer-events-none rounded-sm"></div>
+
+        <div class="relative z-10 flex items-center justify-between pb-6 mb-8 border-b border-bronze/20">
+          <p id="menu-results-count" class="font-sans text-[11px] uppercase tracking-[0.2em] text-bronze">Showing all selections</p>
+          <button id="menu-wishlist-trigger" type="button" class="inline-flex items-center space-x-2 text-xs font-sans uppercase tracking-[0.16em] text-midnight hover:text-bronze transition-colors">
+            <span>Saved Selections</span>
+            <span id="menu-wishlist-count" class="px-2 py-0.5 bg-midnight text-ivory text-[10px] rounded-sm">0</span>
+          </button>
+        </div>
+
+        <!-- Menu Items List (Two-column fine dining layout) -->
+        <div id="menu-items-grid" class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-10">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="menu-empty-state" class="hidden relative z-10 py-16 text-center">
+          <p class="font-serif italic text-2xl text-espresso">No dishes match your current selection.</p>
+          <button id="reset-menu-filters" type="button" class="mt-5 px-6 py-2.5 border border-midnight text-midnight hover:bg-midnight hover:text-ivory transition-colors font-sans text-[11px] uppercase tracking-[0.2em] rounded-sm">
+            Reset Filters
+          </button>
+        </div>
+
+        <!-- Menu Footnote -->
+        <div class="relative z-10 mt-14 pt-6 border-t border-bronze/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-espresso/80 font-sans">
+          <p>All prices are in Indian Rupees (₹) and exclusive of applicable taxes.</p>
+          <p class="font-serif italic text-sm text-bronze">Please inform our sommelier of any dietary allergies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. DINING EXPERIENCES & AMBIENCE (Royal Charcoal #211F1A)
+       ========================================================================= -->
+  <section id="experiences" class="relative bg-charcoal text-ivory py-24 sm:py-32 lg:py-36 luxury-grain">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
+      <div class="max-w-2xl reveal">
+        <div class="flex items-center space-x-3 mb-4">
+          <span class="w-8 h-[1px] bg-gold"></span>
+          <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-gold">Hospitality &amp; Spaces</span>
+        </div>
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-[3.5rem] font-light text-ivory">
+          Dining <span class="italic text-gold">Experiences</span>
+        </h2>
+      </div>
+
+      <div class="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <!-- Left Interactive Switcher -->
+        <div class="lg:col-span-5 flex flex-col divide-y divide-gold/15 border-t border-b border-gold/15 reveal" role="tablist" aria-label="Dining Experiences">
+          <button type="button" data-exp="0" class="exp-tab active text-left py-6 px-3 transition-colors group">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[10px] uppercase tracking-[0.25em] text-gold">01 &middot; Main Hall</span>
+              <span class="exp-indicator w-6 h-[1px] bg-gold transition-all"></span>
+            </div>
+            <h3 class="mt-2 font-serif text-2xl sm:text-3xl text-ivory group-hover:text-gold transition-colors">The Royal Dining Room</h3>
+            <p class="mt-1.5 font-sans font-light text-xs text-muted">Double-height sandstone arches, hand-cast brass sconces, and hushed acoustics.</p>
+          </button>
+
+          <button type="button" data-exp="1" class="exp-tab text-left py-6 px-3 transition-colors group">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[10px] uppercase tracking-[0.25em] text-muted group-hover:text-gold">02 &middot; Culinary Theater</span>
+              <span class="exp-indicator w-0 h-[1px] bg-gold transition-all"></span>
+            </div>
+            <h3 class="mt-2 font-serif text-2xl sm:text-3xl text-ivory/80 group-hover:text-gold transition-colors">Chef's Tasting Table</h3>
+            <p class="mt-1.5 font-sans font-light text-xs text-muted">An intimate seven-course seasonal journey narrated directly from the pass.</p>
+          </button>
+
+          <button type="button" data-exp="2" class="exp-tab text-left py-6 px-3 transition-colors group">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[10px] uppercase tracking-[0.25em] text-muted group-hover:text-gold">03 &middot; Bespoke Occasions</span>
+              <span class="exp-indicator w-0 h-[1px] bg-gold transition-all"></span>
+            </div>
+            <h3 class="mt-2 font-serif text-2xl sm:text-3xl text-ivory/80 group-hover:text-gold transition-colors">Private Heritage Suite</h3>
+            <p class="mt-1.5 font-sans font-light text-xs text-muted">Secluded behind carved teak jaali screens with dedicated butler and sommelier service.</p>
+          </button>
+
+          <button type="button" data-exp="3" class="exp-tab text-left py-6 px-3 transition-colors group">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-[10px] uppercase tracking-[0.25em] text-muted group-hover:text-gold">04 &middot; Evening Ambience</span>
+              <span class="exp-indicator w-0 h-[1px] bg-gold transition-all"></span>
+            </div>
+            <h3 class="mt-2 font-serif text-2xl sm:text-3xl text-ivory/80 group-hover:text-gold transition-colors">Candlelit Courtyard &amp; Bar</h3>
+            <p class="mt-1.5 font-sans font-light text-xs text-muted">Low-lit marble lounges, botanical distillations, and nocturnal architectural calm.</p>
+          </button>
+        </div>
+
+        <!-- Right Dynamic Editorial Showcase -->
+        <div class="lg:col-span-7 reveal reveal-delay-1">
+          <div id="experience-panel" class="exp-fade border border-gold/25 bg-midnight/75 p-5 sm:p-7 rounded-sm">
+            <div class="relative aspect-[16/10] w-full overflow-hidden rounded-sm bg-midnight mb-7 group">
+              <img
+                id="experience-photo"
+                src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=85"
+                alt="The Royal Dining Room at MAISON ÉLARA"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/1200x750/211F1A/B99A64?text=MAISON+ELARA';"
+                class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent pointer-events-none"></div>
+              <div class="absolute top-4 right-4 px-3 py-1 bg-midnight/80 backdrop-blur-md border border-gold/30 rounded-sm">
+                <span id="exp-lighting-mood" class="font-sans text-[10px] uppercase tracking-[0.22em] text-gold">Warm Amber &middot; 2200K</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+              <div class="max-w-lg">
+                <p id="exp-subtitle" class="font-sans text-[10px] uppercase tracking-[0.28em] text-gold mb-2">Main Dining Room</p>
+                <h3 id="exp-title" class="font-serif text-3xl text-ivory">The Royal Dining Room</h3>
+                <p id="exp-desc" class="mt-3 font-sans font-light text-sm leading-relaxed text-muted">
+                  Framed by sculpted Mughal-inspired arches and bathed in warm candlelight, our main dining hall balances grand architectural proportions with deeply intimate table spacing.
+                </p>
+              </div>
+
+              <div class="shrink-0 sm:text-right border-t sm:border-t-0 sm:border-l border-gold/20 pt-4 sm:pt-0 sm:pl-6">
+                <p class="font-sans text-[10px] uppercase tracking-[0.22em] text-muted">Capacity</p>
+                <p id="exp-capacity" class="font-serif text-xl text-ivory mt-1">2 – 6 Guests</p>
+                <button id="exp-reserve-btn" type="button" class="mt-4 inline-flex items-center space-x-2 text-xs uppercase tracking-[0.2em] text-gold hover:text-ivory transition-colors font-sans">
+                  <span>Inquire / Reserve</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       ARCHITECTURE & AMBIENCE — EDITORIAL VISUAL STORYTELLING (Warm Ivory #F2EBDD)
+       ========================================================================= -->
+  <section id="architecture" class="relative bg-ivory text-midnight py-24 sm:py-32 border-t border-bronze/20">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 reveal">
+        <div>
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-[1px] bg-bronze"></span>
+            <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-bronze">Architecture &amp; Ambience</span>
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-normal text-midnight">
+            Carved in Stone. <span class="italic text-espresso">Lit by Candlelight.</span>
+          </h2>
+        </div>
+        <p class="font-sans font-light text-sm text-espresso max-w-md leading-relaxed">
+          Restrained Indian architectural proportions, honed dark marble, antique brass vessels, and warm evening acoustics crafted for unhurried hospitality.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 reveal">
+        <!-- Large Left Architectural Feature -->
+        <figure class="lg:col-span-7 group relative overflow-hidden rounded-sm border border-bronze/25 bg-midnight">
+          <div class="aspect-[16/11] w-full overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=85"
+              alt="Heritage luxury architecture and warm illuminated corridors"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='https://placehold.co/1200x825/211F1A/B99A64?text=ARCHITECTURE';"
+              class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+            />
+          </div>
+          <figcaption class="p-5 bg-midnight text-ivory flex items-center justify-between border-t border-gold/20">
+            <div>
+              <p class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold">01 &middot; Spatial Heritage</p>
+              <p class="font-serif text-xl mt-0.5">Palace-Inspired Proportions &amp; Evening Glow</p>
+            </div>
+            <span class="font-serif italic text-sm text-muted hidden sm:inline">Sandstone &amp; Brass</span>
+          </figcaption>
+        </figure>
+
+        <!-- Right Stacked Editorial Pair -->
+        <div class="lg:col-span-5 flex flex-col gap-6 lg:gap-8">
+          <figure class="group relative overflow-hidden rounded-sm border border-bronze/25 bg-midnight flex-1">
+            <div class="aspect-[16/10] w-full overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=85"
+                alt="Fine dining table setting and plated culinary detail"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/1200x750/211F1A/B99A64?text=TABLE+CRAFT';"
+                class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+              />
+            </div>
+            <figcaption class="p-4 bg-midnight text-ivory border-t border-gold/20">
+              <p class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold">02 &middot; Table Craft</p>
+              <p class="font-serif text-lg mt-0.5">Handcrafted Stoneware &amp; Intimate Plating</p>
+            </figcaption>
+          </figure>
+
+          <figure class="group relative overflow-hidden rounded-sm border border-bronze/25 bg-midnight flex-1">
+            <div class="aspect-[16/10] w-full overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1200&q=85"
+                alt="Intimate warm evening hospitality atmosphere"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/1200x750/211F1A/B99A64?text=HOSPITALITY';"
+                class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+              />
+            </div>
+            <figcaption class="p-4 bg-midnight text-ivory border-t border-gold/20">
+              <p class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold">03 &middot; Intimate Hospitality</p>
+              <p class="font-serif text-lg mt-0.5">Quiet Conversation &amp; Sommelier Service</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       CURATED EDITORIAL GALLERY (Masonry Layout + Fullscreen Lightbox)
+       ========================================================================= -->
+  <section id="gallery" class="relative bg-midnight text-ivory py-24 sm:py-28 border-t border-gold/15">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12 reveal">
+        <div>
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-[1px] bg-gold"></span>
+            <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-gold">Visual Archive</span>
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-light text-ivory">Atmosphere &amp; <span class="italic text-gold">Detail</span></h2>
+        </div>
+        <p class="font-sans text-xs uppercase tracking-[0.2em] text-muted">Select any photograph to view fullscreen</p>
+      </div>
+
+      <div id="gallery-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 reveal">
+        <!-- Populated via JS with real high-resolution fine-dining photographs -->
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. RESERVATION INTERFACE (Midnight Black #171613)
+       ========================================================================= -->
+  <section id="reservations" class="relative bg-midnight text-ivory py-24 sm:py-32 lg:py-36 border-t border-gold/20 luxury-grain">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-start">
+        <!-- Left Column: Hospitality Details -->
+        <div class="lg:col-span-5 reveal">
+          <div class="flex items-center space-x-3 mb-4">
+            <span class="w-8 h-[1px] bg-gold"></span>
+            <span class="font-sans text-[11px] uppercase tracking-[0.3em] text-gold">Table Reservations</span>
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-light leading-tight text-ivory">
+            Reserve Your <span class="italic text-gold">Evening</span>
+          </h2>
+          <p class="mt-5 font-sans font-light text-sm leading-relaxed text-muted">
+            We welcome guests for dinner service Tuesday through Sunday. For parties exceeding twelve guests or private salon buyouts, our concierge will tailor a bespoke tasting menu.
+          </p>
+
+          <div class="mt-10 space-y-6 border-t border-gold/20 pt-8">
+            <div>
+              <p class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold">Dinner Service</p>
+              <p class="font-serif text-xl text-ivory mt-1">Tuesday – Sunday &middot; 19:00 – 23:30</p>
+              <p class="font-sans text-xs text-muted mt-0.5">Last seating at 21:30 &middot; Closed Mondays</p>
+            </div>
+            <div>
+              <p class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold">Dress Code</p>
+              <p class="font-sans font-light text-sm text-ivory/90 mt-1">Smart Elegant &middot; Traditional Indian formal attire welcomed.</p>
+            </div>
+            <div class="p-4 border border-gold/25 bg-charcoal/70 rounded-sm">
+              <p class="font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-1">Phase 2 Preview Notice</p>
+              <p class="font-sans font-light text-xs text-muted leading-relaxed">
+                This reservation interface validates and previews your booking request. Live database confirmation will activate in Phase 4 (Supabase integration).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Luxury Reservation Form -->
+        <div class="lg:col-span-7 reveal reveal-delay-1">
+          <form id="reservation-form" novalidate class="bg-charcoal/80 border border-gold/25 p-7 sm:p-10 rounded-sm space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label for="res-name" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Guest Name *</label>
+                <input id="res-name" name="name" type="text" required placeholder="Aarav Singhania" class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory placeholder:text-muted/50 rounded-sm outline-none transition-colors" />
+                <p class="error-msg hidden mt-1.5 text-xs text-rose-300 font-sans"></p>
+              </div>
+              <div>
+                <label for="res-email" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Email Address *</label>
+                <input id="res-email" name="email" type="email" required placeholder="guest@example.com" class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory placeholder:text-muted/50 rounded-sm outline-none transition-colors" />
+                <p class="error-msg hidden mt-1.5 text-xs text-rose-300 font-sans"></p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label for="res-phone" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Phone Number *</label>
+                <input id="res-phone" name="phone" type="tel" required placeholder="+91 98100 00000" class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory placeholder:text-muted/50 rounded-sm outline-none transition-colors" />
+                <p class="error-msg hidden mt-1.5 text-xs text-rose-300 font-sans"></p>
+              </div>
+              <div>
+                <label for="res-date" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Date *</label>
+                <input id="res-date" name="date" type="date" required class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory rounded-sm outline-none transition-colors [color-scheme:dark]" />
+                <p class="error-msg hidden mt-1.5 text-xs text-rose-300 font-sans"></p>
+              </div>
+              <div>
+                <label for="res-guests" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Guests (1–12) *</label>
+                <select id="res-guests" name="guests" class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory rounded-sm outline-none transition-colors">
+                  <option value="1">1 Guest</option>
+                  <option value="2" selected>2 Guests</option>
+                  <option value="3">3 Guests</option>
+                  <option value="4">4 Guests</option>
+                  <option value="5">5 Guests</option>
+                  <option value="6">6 Guests</option>
+                  <option value="8">8 Guests</option>
+                  <option value="10">10 Guests</option>
+                  <option value="12">12 Guests</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Time Slot Selector -->
+            <div>
+              <span class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2.5">Preferred Seating Time *</span>
+              <input type="hidden" id="res-time" name="time" value="20:00" />
+              <div id="time-slot-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+                <button type="button" data-time="19:00" class="time-slot py-2.5 text-xs font-sans tracking-wider border border-gold/25 text-ivory/80 hover:border-gold rounded-sm transition-colors">19:00</button>
+                <button type="button" data-time="19:30" class="time-slot py-2.5 text-xs font-sans tracking-wider border border-gold/25 text-ivory/80 hover:border-gold rounded-sm transition-colors">19:30</button>
+                <button type="button" data-time="20:00" class="time-slot active py-2.5 text-xs font-sans tracking-wider border border-gold bg-gold text-midnight font-medium rounded-sm transition-colors">20:00</button>
+                <button type="button" data-time="20:30" class="time-slot py-2.5 text-xs font-sans tracking-wider border border-gold/25 text-ivory/80 hover:border-gold rounded-sm transition-colors">20:30</button>
+                <button type="button" data-time="21:00" class="time-slot py-2.5 text-xs font-sans tracking-wider border border-gold/25 text-ivory/80 hover:border-gold rounded-sm transition-colors">21:00</button>
+                <button type="button" data-time="21:30" class="time-slot py-2.5 text-xs font-sans tracking-wider border border-gold/25 text-ivory/80 hover:border-gold rounded-sm transition-colors">21:30</button>
+              </div>
+            </div>
+
+            <!-- Dining Preference -->
+            <div>
+              <label for="res-preference" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Dining Preference</label>
+              <select id="res-preference" name="preference" class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory rounded-sm outline-none transition-colors">
+                <option value="Main Dining Room">Main Dining Room</option>
+                <option value="Private Salon">Private Candlelight Salon</option>
+                <option value="Chef's Table">Chef's Tasting Table (Seven-Course)</option>
+              </select>
+            </div>
+
+            <!-- Special Requests -->
+            <div>
+              <label for="res-requests" class="block font-sans text-[10px] uppercase tracking-[0.22em] text-gold mb-2">Special Requests or Dietary Notes</label>
+              <textarea id="res-requests" name="requests" rows="3" placeholder="Anniversary celebration, wine pairing inquiry, dietary restrictions..." class="w-full bg-midnight/70 border border-gold/25 focus:border-gold px-4 py-3 text-sm text-ivory placeholder:text-muted/50 rounded-sm outline-none transition-colors resize-none"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-gold text-midnight hover:bg-ivory transition-colors duration-300 font-sans text-xs uppercase tracking-[0.24em] font-medium rounded-sm">
+              Preview Reservation Request
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       9. EDITORIAL FOOTER & CONTACT (#171613 with #B99A64/25 top hairline)
+       ========================================================================= -->
+  <footer id="contact" class="bg-midnight text-ivory border-t border-gold/25 pt-20 pb-12">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-gold/15">
+        <!-- Brand Column -->
+        <div class="lg:col-span-4">
+          <span class="font-serif text-2xl sm:text-3xl tracking-[0.26em] text-ivory">MAISON ÉLARA</span>
+          <p class="mt-3 font-serif italic text-base text-gold/90">Where every moment becomes an experience.</p>
+          <p class="mt-5 font-sans font-light text-xs leading-relaxed text-muted max-w-xs">
+            Contemporary Indian heritage reimagined through architectural calm, slow-fire craftsmanship, and timeless luxury hospitality.
+          </p>
+        </div>
+
+        <!-- Navigation Column -->
+        <div class="lg:col-span-2">
+          <h4 class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold mb-5">Navigation</h4>
+          <ul class="space-y-3 font-sans text-xs text-muted">
+            <li><a href="#home" class="hover:text-ivory transition-colors">Home</a></li>
+            <li><a href="#our-story" class="hover:text-ivory transition-colors">Our Story</a></li>
+            <li><a href="#the-menu" class="hover:text-ivory transition-colors">The Menu</a></li>
+            <li><a href="#experiences" class="hover:text-ivory transition-colors">Experiences</a></li>
+            <li><a href="#gallery" class="hover:text-ivory transition-colors">Gallery</a></li>
+            <li><a href="#reservations" class="hover:text-ivory transition-colors">Reservations</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact & Hours -->
+        <div class="lg:col-span-3">
+          <h4 class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold mb-5">Contact &amp; Hours</h4>
+          <address class="not-italic space-y-3 font-sans font-light text-xs text-muted leading-relaxed">
+            <p class="text-ivory/90">14 Aurangzeb Heritage Enclave,<br />Lutyens' New Delhi 110011, India</p>
+            <p>Concierge: <span class="text-ivory/90">+91 11 4088 9200</span></p>
+            <p>Email: <span class="text-ivory/90">concierge@maisonelara.in</span></p>
+            <p class="pt-1 text-gold/90">Tue – Sun: 19:00 – 23:30 (Sample Hours)</p>
+          </address>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="lg:col-span-3">
+          <h4 class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold mb-5">Private Dispatches</h4>
+          <p class="font-sans font-light text-xs text-muted leading-relaxed mb-4">
+            Receive invitations to seasonal tasting menus, cellar evenings, and chef collaborations.
+          </p>
+          <form id="newsletter-form" novalidate class="space-y-3">
+            <input id="newsletter-email" type="email" required placeholder="Your email address" aria-label="Newsletter email" class="w-full bg-charcoal border border-gold/25 focus:border-gold px-3.5 py-2.5 text-xs text-ivory placeholder:text-muted/60 rounded-sm outline-none transition-colors" />
+            <button type="submit" class="w-full py-2.5 border border-gold/60 text-gold hover:bg-gold hover:text-midnight transition-colors font-sans text-[11px] uppercase tracking-[0.2em] rounded-sm">
+              Subscribe
+            </button>
+            <p id="newsletter-feedback" class="hidden text-xs font-sans"></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bottom Copyright -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-sans text-muted/80">
+        <p>&copy; 2026 MAISON ÉLARA Hospitality. All rights reserved. (Phase 1 &amp; 2 Prototype)</p>
+        <div class="flex items-center space-x-6">
+          <a href="#contact" class="hover:text-gold transition-colors">Privacy Policy</a>
+          <a href="#contact" class="hover:text-gold transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODAL 1: TASTING NOTES EDITORIAL MODAL
+       ========================================================================= -->
+  <div id="tasting-modal" class="fixed inset-0 z-[80] bg-midnight/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="tasting-modal-title">
+    <div class="bg-charcoal border border-gold/35 max-w-2xl w-full p-7 sm:p-10 rounded-sm relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button id="close-tasting-modal" type="button" class="absolute top-5 right-5 p-2 text-muted hover:text-gold transition-colors" aria-label="Close Tasting Notes">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <p id="tm-category" class="font-sans text-[10px] uppercase tracking-[0.28em] text-gold mb-2"></p>
+      <h3 id="tasting-modal-title" class="font-serif text-3xl sm:text-4xl text-ivory"></h3>
+      <p id="tm-price" class="font-serif text-xl text-gold mt-1"></p>
+
+      <p id="tm-description" class="mt-5 font-sans font-light text-sm leading-relaxed text-muted border-t border-gold/15 pt-5"></p>
+
+      <div class="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gold/15 pt-6">
+        <div>
+          <h4 class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold mb-2">Flavor Profile</h4>
+          <p id="tm-profile" class="font-sans font-light text-xs leading-relaxed text-ivory/90"></p>
+        </div>
+        <div>
+          <h4 class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold mb-2">Sommelier Pairing</h4>
+          <p id="tm-pairing" class="font-sans font-light text-xs leading-relaxed text-ivory/90"></p>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t border-gold/15 pt-5">
+        <h4 class="font-sans text-[10px] uppercase tracking-[0.24em] text-gold mb-2.5">Key Provenance Ingredients</h4>
+        <div id="tm-ingredients" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-end">
+        <button id="tm-wishlist-btn" type="button" class="px-6 py-3 border border-gold/60 text-gold hover:bg-gold hover:text-midnight transition-colors font-sans text-[11px] uppercase tracking-[0.2em] rounded-sm">
+          Save to Wishlist
+        </button>
+        <a href="#reservations" id="tm-reserve-link" class="text-center px-6 py-3 bg-gold text-midnight hover:bg-ivory transition-colors font-sans text-[11px] uppercase tracking-[0.2em] font-medium rounded-sm">
+          Reserve to Experience
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: RESERVATION REQUEST PREVIEW (HONEST PHASE 2 NOTICE)
+       ========================================================================= -->
+  <div id="reservation-modal" class="fixed inset-0 z-[80] bg-midnight/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="res-modal-title">
+    <div class="bg-charcoal border border-gold/40 max-w-lg w-full p-7 sm:p-9 rounded-sm relative shadow-2xl">
+      <button id="close-res-modal" type="button" class="absolute top-5 right-5 p-2 text-muted hover:text-gold transition-colors" aria-label="Close Preview">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="inline-block px-3 py-1 bg-burgundy/60 border border-gold/30 text-[10px] uppercase tracking-[0.22em] text-ivory font-sans mb-4 rounded-sm">
+        Phase 2 Frontend Preview
+      </div>
+      <h3 id="res-modal-title" class="font-serif text-2xl sm:text-3xl text-ivory leading-snug">
+        Reservation Request Preview — Backend Integration Pending (Phase 4)
+      </h3>
+      <p class="mt-3 font-sans font-light text-xs leading-relaxed text-muted">
+        No database booking has been created yet. Below is the validated request payload ready for Phase 4 Supabase integration:
+      </p>
+
+      <div id="res-summary-box" class="mt-6 bg-midnight/80 border border-gold/20 p-5 rounded-sm space-y-2.5 font-sans text-xs">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="mt-7 flex justify-end">
+        <button id="ack-res-modal" type="button" class="px-7 py-3 bg-gold text-midnight hover:bg-ivory transition-colors font-sans text-[11px] uppercase tracking-[0.2em] font-medium rounded-sm">
+          Close Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: WISHLIST DRAWER MODAL
+       ========================================================================= -->
+  <div id="wishlist-modal" class="fixed inset-0 z-[80] bg-midnight/80 backdrop-blur-md hidden items-center justify-end" role="dialog" aria-modal="true" aria-labelledby="wishlist-title">
+    <div class="bg-charcoal border-l border-gold/30 w-full max-w-md h-full p-7 sm:p-8 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-5 border-b border-gold/20">
+          <div>
+            <p class="font-sans text-[10px] uppercase tracking-[0.26em] text-gold">Curated List</p>
+            <h3 id="wishlist-title" class="font-serif text-2xl text-ivory mt-0.5">Saved Selections</h3>
+          </div>
+          <button id="close-wishlist-modal" type="button" class="p-2 text-muted hover:text-gold transition-colors" aria-label="Close Wishlist">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="wishlist-items-list" class="mt-6 space-y-4 max-h-[68vh] overflow-y-auto pr-1">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-gold/20">
+        <a href="#reservations" id="wishlist-reserve-cta" class="block w-full text-center py-3.5 bg-gold text-midnight hover:bg-ivory transition-colors font-sans text-xs uppercase tracking-[0.22em] font-medium rounded-sm">
+          Reserve a Table
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: GALLERY LIGHTBOX
+       ========================================================================= -->
+  <div id="lightbox-modal" class="fixed inset-0 z-[85] bg-midnight/95 backdrop-blur-xl hidden items-center justify-center p-4 sm:p-10" role="dialog" aria-modal="true" aria-label="Gallery Lightbox">
+    <button id="lightbox-close" type="button" class="absolute top-6 right-6 p-2.5 text-ivory/80 hover:text-gold transition-colors" aria-label="Close Lightbox">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <button id="lightbox-prev" type="button" class="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 p-3 border border-gold/30 text-ivory hover:border-gold hover:text-gold rounded-sm transition-colors" aria-label="Previous Image">
+      &larr;
+    </button>
+    <button id="lightbox-next" type="button" class="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 p-3 border border-gold/30 text-ivory hover:border-gold hover:text-gold rounded-sm transition-colors" aria-label="Next Image">
+      &rarr;
+    </button>
+
+    <div class="max-w-4xl w-full flex flex-col items-center">
+      <div class="w-full max-h-[72vh] aspect-[16/10] bg-charcoal border border-gold/30 rounded-sm overflow-hidden">
+        <img id="lightbox-img" src="" alt="" class="editorial-photo w-full h-full object-cover block" />
+      </div>
+      <div class="mt-5 text-center">
+        <p id="lightbox-tag" class="font-sans text-[10px] uppercase tracking-[0.28em] text-gold"></p>
+        <h3 id="lightbox-title" class="font-serif text-2xl sm:text-3xl text-ivory mt-1"></h3>
+        <p id="lightbox-caption" class="font-sans font-light text-xs text-muted mt-1.5"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       APPLICATION SCRIPT: THREE.JS 3D HERO + ART CANVAS ENGINE + INTERACTIVITY
+       ========================================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* =======================================================================
+         DATA MODELS (Real Unsplash Fine-Dining Photography & Editorial Copy)
+         ======================================================================= */
+      const signatureDishes = [
+        {
+          id: 'sig-paneer',
+          name: 'Royal Paneer Makhani',
+          category: "Chef's Signature",
+          diet: 'Vegetarian',
+          price: '₹1,450',
+          shortDesc: 'Artisanal house-pressed cottage cheese glazed in a velvety heirloom tomato, Kashmiri saffron, and smoked fenugreek emulsion.',
+          profile: 'Silky, gently spiced, warm cardamom finish with subtle charcoal aromatics.',
+          pairing: '2021 Chablis Premier Cru or House Saffron-Cardamom Shrub (Zero-Proof).',
+          ingredients: ['Heirloom Vine Tomatoes', 'Pampore Saffron', 'A2 Artisanal Paneer', 'Kasuri Methi', 'Cultured White Butter'],
+          image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=1200&q=85',
+          alt: 'Royal Paneer Makhani served in a rich saffron-tomato emulsion'
+        },
+        {
+          id: 'sig-biryani',
+          name: 'Saffron-Infused Dum Biryani',
+          category: 'Royal Heritage',
+          diet: 'Non-Vegetarian',
+          price: '₹2,200',
+          shortDesc: 'Aged Dehradun basmati and slow-braised lamb shoulder sealed beneath a golden pastry crust, infused with rosewater, kewra, and marrow jus.',
+          profile: 'Aromatic, deeply savory, floral saffron top-notes with tender melt-in-mouth richness.',
+          pairing: '2018 Côte-Rôtie Syrah or Smoked Vetiver & Black Lime Elixir.',
+          ingredients: ['Aged Dehradun Basmati', 'Slow-Braised Lamb', 'Kewra Distillate', 'Edible Silver & Gold Leaf', 'Caramelized Shallots'],
+          image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=1200&q=85',
+          alt: 'Aromatic Saffron-Infused Dum Biryani garnished with caramelized shallots and herbs'
+        },
+        {
+          id: 'sig-galouti',
+          name: 'Awadhi Galouti & Seekh Kebabs',
+          category: "Chef's Signature",
+          diet: 'Non-Vegetarian',
+          price: '₹1,850',
+          shortDesc: 'Finely minced lamb tenderized with green papaya and thirty-two roasted royal spices, charcoal-seared in clarified butter with saffron warqi paratha.',
+          profile: 'Velvety, clove-smoked warmth with delicate sweetness and crisp saffron flatbread.',
+          pairing: 'Aged Single Malt Highland Reserve or Spiced Pomegranate Reduction.',
+          ingredients: ['Pasture-Raised Lamb', '32-Spice Potli Masala', 'Clove Dhungar Smoke', 'Saffron Warqi Paratha', 'Mint-Walnut Chutney'],
+          image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=85',
+          alt: 'Charcoal-grilled Awadhi kebabs plated with herbs and spice reductions'
+        },
+        {
+          id: 'sig-rasmalai',
+          name: 'Rose, Pistachio & Gold Leaf Shahi Dessert',
+          category: 'Dessert',
+          diet: 'Vegetarian',
+          price: '₹950',
+          shortDesc: 'Delicate saffron-poached chenna cream and caramelized pastry layers finished with roasted Iranian pistachio praline, Kannauj damask rose petals, and edible gold.',
+          profile: 'Crisp, floral, creamy saffron sweetness balanced by toasted pistachio.',
+          pairing: 'Late Harvest Gewürztraminer or Darjeeling First Flush Tea.',
+          ingredients: ['Kannauj Damask Rose', 'Iranian Pistachio', 'Saffron Chenna Cream', 'Caramelized Pastry', '24K Edible Gold Fleck'],
+          image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1200&q=85',
+          alt: 'Contemporary fine-dining Indian dessert plated with rose and pistachio accents'
+        }
+      ];
+
+      const menuItems = [
+        { id: 'm1', name: 'Royal Paneer Makhani', category: "Chef's Signatures", price: '₹1,450', desc: 'House-pressed paneer, heirloom tomato-saffron velouté, smoked fenugreek.', tags: ['Vegetarian', "Chef's Selection", 'Gluten-Free'], available: true },
+        { id: 'm2', name: 'Awadhi Galouti & Seekh Kebabs', category: "Chef's Signatures", price: '₹1,850', desc: 'Clove-smoked tenderized lamb medallions, saffron warqi paratha, mint chutney.', tags: ['Non-Vegetarian', "Chef's Selection"], available: true },
+        { id: 'm3', name: 'Saffron-Infused Dum Biryani', category: 'Biryani & Rice', price: '₹2,200', desc: 'Pastry-sealed aged basmati, braised lamb shoulder, kewra, saffron, burhani raita.', tags: ['Non-Vegetarian', "Chef's Selection"], available: true },
+        { id: 'm4', name: 'Dal Élara (24-Hour Black Lentil)', category: 'Royal Indian Cuisine', price: '₹1,250', desc: 'Whole urad lentils simmered overnight over dying tandoor embers, cultured butter.', tags: ['Vegetarian', "Chef's Selection", 'Gluten-Free'], available: true },
+        { id: 'm5', name: 'Laal Maas of Jodhpur', category: 'Royal Indian Cuisine', price: '₹2,100', desc: 'Slow-braised lamb shank, Mathania red chillies, charred garlic, smoked ghee.', tags: ['Non-Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm6', name: 'Murgh Malai Angaar', category: 'Non-Vegetarian', price: '₹1,650', desc: 'Charcoal-roasted free-range chicken supremes, aged cheddar, green cardamom, saffron oil.', tags: ['Non-Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm7', name: 'Morel & Truffle Gucchi Pulao', category: 'Biryani & Rice', price: '₹1,950', desc: 'Kashmiri wild morels stuffed with spiced ricotta, aged basmati, black truffle essence.', tags: ['Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm8', name: 'Tandoori Bharwan Khumb', category: 'Vegetarian', price: '₹1,150', desc: 'Charred button mushrooms, aged cheddar, toasted pine nuts, coriander dust.', tags: ['Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm9', name: 'Subz Nizami Handi', category: 'Vegetarian', price: '₹1,350', desc: 'Seasonal baby vegetables, roasted cashew-saffron gravy, crisp lotus stem.', tags: ['Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm10', name: 'Truffle & Sea Salt Kulcha', category: 'Breads', price: '₹480', desc: 'Tandoor-baked leavened sourdough kulcha brushed with black truffle butter.', tags: ['Vegetarian'], available: true },
+        { id: 'm11', name: 'Saffron Warqi Paratha', category: 'Breads', price: '₹390', desc: 'Flaky multi-layered griddle bread infused with saffron milk and clarified butter.', tags: ['Vegetarian'], available: true },
+        { id: 'm12', name: 'Rose, Pistachio & Gold Leaf Shahi Dessert', category: 'Desserts', price: '₹950', desc: 'Caramelized pastry, saffron chenna cream, Iranian pistachio praline, damask rose.', tags: ['Vegetarian', "Chef's Selection"], available: true },
+        { id: 'm13', name: 'Smoked Cardamom Shahi Tukda', category: 'Desserts', price: '₹880', desc: 'Brioche soaked in saffron rabri, toasted almonds, edible gold leaf.', tags: ['Vegetarian'], available: false },
+        { id: 'm14', name: 'Darjeeling & Saffron Old Fashioned', category: 'Beverages', price: '₹1,100', desc: 'Small-batch bourbon, first-flush Darjeeling infusion, Kashmiri saffron bitters.', tags: ['Vegetarian', 'Gluten-Free'], available: true },
+        { id: 'm15', name: 'Kokum, Rose & Vetiver Elixir', category: 'Beverages', price: '₹620', desc: 'Zero-proof botanical distillate of Goan kokum, khus root, and sparkling spring water.', tags: ['Vegetarian', 'Gluten-Free'], available: true }
+      ];
+
+      const menuCategories = ['All', "Chef's Signatures", 'Vegetarian', 'Non-Vegetarian', 'Royal Indian Cuisine', 'Biryani & Rice', 'Breads', 'Desserts', 'Beverages'];
+
+      const experiencesData = [
+        {
+          subtitle: 'Main Dining Room',
+          title: 'The Royal Dining Room',
+          desc: 'Framed by sculpted Mughal-inspired arches and bathed in warm candlelight, our main dining hall balances grand architectural proportions with deeply intimate table spacing.',
+          capacity: '2 – 6 Guests',
+          lighting: 'Warm Amber · 2200K',
+          prefValue: 'Main Dining Room',
+          image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          subtitle: 'Seven-Course Culinary Journey',
+          title: "Chef's Tasting Table",
+          desc: 'Seated beside our open hearth, guests experience an evolving seven-course menu paired with rare vintages and direct storytelling from our culinary brigade.',
+          capacity: '2 – 8 Guests',
+          lighting: 'Hearth Glow · 2400K',
+          prefValue: "Chef's Table",
+          image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          subtitle: 'Secluded Sanctuary',
+          title: 'Private Heritage Suite',
+          desc: 'Enclosed behind hand-carved teak jaali screens, the Private Heritage Suite offers bespoke menu printing, dedicated butler service, and serene acoustic privacy for celebrations.',
+          capacity: '6 – 14 Guests',
+          lighting: 'Candlelit Chiaroscuro · 1900K',
+          prefValue: 'Private Salon',
+          image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          subtitle: 'Nocturnal Lounge & Courtyard',
+          title: 'Candlelit Courtyard & Bar',
+          desc: 'Unwind beneath warm evening illumination with rare single malts, Indian botanical distillations, and small charcoal-seared tasting plates.',
+          capacity: '2 – 10 Guests',
+          lighting: 'Nocturnal Glow · 2100K',
+          prefValue: 'Main Dining Room',
+          image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=85'
+        }
+      ];
+
+      const galleryData = [
+        {
+          tag: 'Interior',
+          title: 'The Royal Dining Hall',
+          caption: 'Candlelit tables and refined architectural calm during evening service.',
+          aspect: 'aspect-[4/5]',
+          image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          tag: 'Culinary Craft',
+          title: 'Slow-Simmered Heritage Curries',
+          caption: 'Single-origin Kashmiri saffron and hand-ground spices reduced over slow embers.',
+          aspect: 'aspect-[4/3]',
+          image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          tag: 'Chef Craftsmanship',
+          title: 'Plating Under Copper Lamps',
+          caption: 'Final garnishes and precision plating moments before leaving the pass.',
+          aspect: 'aspect-[4/5]',
+          image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          tag: 'Royal Hospitality',
+          title: 'Contemporary Indian Vessels',
+          caption: 'Traditional brass and stoneware presentations curated for tasting flights.',
+          aspect: 'aspect-[4/3]',
+          image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          tag: 'Open-Fire Kitchen',
+          title: 'Charcoal & Tandoor Craft',
+          caption: 'Live-fire searing imparting unmistakable smoky depth to our signature kebabs.',
+          aspect: 'aspect-[4/3]',
+          image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85'
+        },
+        {
+          tag: 'Ambience',
+          title: 'Evening Service & Wine Pairing',
+          caption: 'Warm amber illumination across crisp table linens and crystal glassware.',
+          aspect: 'aspect-[4/5]',
+          image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=85'
+        }
+      ];
+
+      /* =======================================================================
+         STATE MANAGEMENT
+         ======================================================================= */
+      let activeCategory = 'All';
+      let activeDiet = 'All';
+      let searchQuery = '';
+      let wishlist = new Set();
+      let currentLightboxIdx = 0;
+      let currentTastingDishId = null;
+
+      /* =======================================================================
+         THREE.JS CINEMATIC 3D HERO SCENE
+         ======================================================================= */
+      function initHero3D() {
+        const canvas = document.getElementById('hero-3d-canvas');
+        const container = document.getElementById('hero-canvas-container');
+        if (!canvas || !container || typeof THREE === 'undefined') return;
+
+        let renderer;
+        try {
+          renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+        } catch (err) {
+          // Graceful real-photograph fallback if WebGL is unavailable
+          container.innerHTML = `<img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=85" alt="MAISON ÉLARA luxury dining room" class="editorial-photo w-full h-full object-cover" />`;
+          return;
+        }
+
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.08;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x131210);
+        scene.fog = new THREE.FogExp2(0x131210, 0.095);
+
+        const camera = new THREE.PerspectiveCamera(36, container.clientWidth / container.clientHeight, 0.1, 40);
+        // Start low & close for cinematic entrance sweep
+        camera.position.set(1.6, 1.35, 3.3);
+
+        // Procedural Dark Marble Texture
+        function createMarbleTexture() {
+          const c = document.createElement('canvas');
+          c.width = 512;
+          c.height = 512;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#181613';
+          ctx.fillRect(0, 0, 512, 512);
+          for (let i = 0; i < 24; i++) {
+            ctx.strokeStyle = i % 3 === 0 ? 'rgba(185,154,100,0.09)' : 'rgba(242,235,221,0.04)';
+            ctx.lineWidth = Math.random() * 2 + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * 512, 0);
+            ctx.bezierCurveTo(Math.random() * 512, 170, Math.random() * 512, 340, Math.random() * 512, 512);
+            ctx.stroke();
+          }
+          const tex = new THREE.CanvasTexture(c);
+          tex.wrapS = THREE.RepeatWrapping;
+          tex.wrapT = THREE.RepeatWrapping;
+          tex.repeat.set(3, 3);
+          return tex;
+        }
+
+        // Procedural Jaali Light-Shadow Gobo Projection Texture
+        function createJaaliProjectionTexture() {
+          const c = document.createElement('canvas');
+          c.width = 512;
+          c.height = 512;
+          const ctx = c.getContext('2d');
+          ctx.clearRect(0, 0, 512, 512);
+          const rad = ctx.createRadialGradient(256, 256, 20, 256, 256, 240);
+          rad.addColorStop(0, 'rgba(218, 173, 102, 0.28)');
+          rad.addColorStop(0.65, 'rgba(185, 154, 100, 0.10)');
+          rad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, 512, 512);
+
+          // Carve crisp geometric jaali shadow bars
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.strokeStyle = 'rgba(0,0,0,0.88)';
+          ctx.lineWidth = 6;
+          const s = 48;
+          for (let x = 0; x <= 512; x += s) {
+            for (let y = 0; y <= 512; y += s) {
+              ctx.beginPath();
+              ctx.moveTo(x, y - s / 2);
+              ctx.lineTo(x + s / 2, y);
+              ctx.lineTo(x, y + s / 2);
+              ctx.lineTo(x - s / 2, y);
+              ctx.closePath();
+              ctx.stroke();
+            }
+          }
+          return new THREE.CanvasTexture(c);
+        }
+
+        // Group shifted slightly right on desktop so left editorial copy has breathing room
+        const tableGroup = new THREE.Group();
+        const isDesktop = window.innerWidth >= 1024;
+        tableGroup.position.set(isDesktop ? 0.85 : 0, -0.35, 0);
+        scene.add(tableGroup);
+
+        // 1. Dark Polished Marble Tabletop
+        const marbleTex = createMarbleTexture();
+        const tableGeo = new THREE.PlaneGeometry(18, 14);
+        const tableMat = new THREE.MeshStandardMaterial({
+          map: marbleTex,
+          color: 0x26231e,
+          roughness: 0.24,
+          metalness: 0.18
+        });
+        const tableMesh = new THREE.Mesh(tableGeo, tableMat);
+        tableMesh.rotation.x = -Math.PI / 2;
+        tableMesh.receiveShadow = true;
+        tableGroup.add(tableMesh);
+
+        // Subtle Architectural Jaali Light Pattern on Marble
+        const jaaliTex = createJaaliProjectionTexture();
+        const jaaliPlane = new THREE.Mesh(
+          new THREE.PlaneGeometry(7.2, 5.2),
+          new THREE.MeshBasicMaterial({
+            map: jaaliTex,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            opacity: 0.72
+          })
+        );
+        jaaliPlane.rotation.x = -Math.PI / 2;
+        jaaliPlane.rotation.z = 0.22;
+        jaaliPlane.position.set(-0.3, 0.004, -0.35);
+        tableGroup.add(jaaliPlane);
+
+        // Shared Materials
+        const brassMat = new THREE.MeshStandardMaterial({
+          color: 0xb99a64,
+          roughness: 0.32,
+          metalness: 0.88
+        });
+        const darkCeramicMat = new THREE.MeshStandardMaterial({
+          color: 0x1d1b18,
+          roughness: 0.62,
+          metalness: 0.08
+        });
+
+        // 2. Antique Brushed-Brass Charger Plate
+        const charger = new THREE.Mesh(new THREE.CylinderGeometry(1.08, 0.96, 0.045, 64), brassMat);
+        charger.position.y = 0.024;
+        charger.castShadow = true;
+        charger.receiveShadow = true;
+        tableGroup.add(charger);
+
+        // Fine raised rim on charger
+        const chargerRim = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.018, 16, 64), brassMat);
+        chargerRim.rotation.x = Math.PI / 2;
+        chargerRim.position.y = 0.046;
+        tableGroup.add(chargerRim);
+
+        // 3. Matte Dark-Charcoal Ceramic Plate
+        const ceramicPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.86, 0.74, 0.055, 64), darkCeramicMat);
+        ceramicPlate.position.y = 0.072;
+        ceramicPlate.castShadow = true;
+        ceramicPlate.receiveShadow = true;
+        tableGroup.add(ceramicPlate);
+
+        // 4. Sculpted Contemporary Fine-Dining Plated Dish
+        // Saffron-Makhani Glaze Pool
+        const saucePool = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.56, 0.58, 0.014, 48),
+          new THREE.MeshStandardMaterial({ color: 0xb85a20, roughness: 0.16, metalness: 0.05 })
+        );
+        saucePool.position.y = 0.104;
+        tableGroup.add(saucePool);
+
+        // Delicate cream glaze ring
+        const glazeRing = new THREE.Mesh(
+          new THREE.TorusGeometry(0.42, 0.012, 12, 48),
+          new THREE.MeshStandardMaterial({ color: 0xf2ebdd, roughness: 0.35 })
+        );
+        glazeRing.rotation.x = Math.PI / 2;
+        glazeRing.position.y = 0.112;
+        tableGroup.add(glazeRing);
+
+        // Layered Saffron-Gold Dome Centerpiece
+        const dishDome = new THREE.Mesh(
+          new THREE.SphereGeometry(0.32, 40, 24, 0, Math.PI * 2, 0, Math.PI * 0.56),
+          new THREE.MeshStandardMaterial({ color: 0xd99b43, roughness: 0.42, metalness: 0.08 })
+        );
+        dishDome.scale.set(1.05, 0.72, 1.05);
+        dishDome.position.y = 0.105;
+        dishDome.castShadow = true;
+        tableGroup.add(dishDome);
+
+        // Micro-herb & edible gold-leaf accents atop dome
+        const herbMat = new THREE.MeshStandardMaterial({ color: 0x3f5e34, roughness: 0.65 });
+        const goldLeafMat = new THREE.MeshStandardMaterial({ color: 0xf0cf7b, roughness: 0.18, metalness: 0.96 });
+        for (let i = 0; i < 6; i++) {
+          const ang = (i / 6) * Math.PI * 2;
+          const herb = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.075, 5), herbMat);
+          herb.position.set(Math.cos(ang) * 0.09, 0.33 + (i % 2) * 0.015, Math.sin(ang) * 0.09);
+          herb.rotation.set(Math.sin(ang) * 0.4, ang, Math.cos(ang) * 0.4);
+          tableGroup.add(herb);
+        }
+        const goldFleck = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.008, 0.04), goldLeafMat);
+        goldFleck.position.set(0.02, 0.34, -0.02);
+        goldFleck.rotation.set(0.15, 0.5, -0.1);
+        tableGroup.add(goldFleck);
+
+        // 5. Brushed Brass Cutlery (Knife on right, Fork on left)
+        const knifeHandle = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.022, 0.72), brassMat);
+        knifeHandle.position.set(1.36, 0.014, 0.15);
+        knifeHandle.castShadow = true;
+        tableGroup.add(knifeHandle);
+
+        const knifeBlade = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.01, 0.62), brassMat);
+        knifeBlade.position.set(1.36, 0.01, -0.48);
+        knifeBlade.castShadow = true;
+        tableGroup.add(knifeBlade);
+
+        const forkHandle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.02, 0.85), brassMat);
+        forkHandle.position.set(-1.36, 0.014, 0.12);
+        forkHandle.castShadow = true;
+        tableGroup.add(forkHandle);
+
+        for (let t = -1; t <= 1; t++) {
+          const tine = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.01, 0.34), brassMat);
+          tine.position.set(-1.36 + t * 0.026, 0.012, -0.46);
+          tableGroup.add(tine);
+        }
+
+        // 6. Stemmed Crystal Wine Glass
+        const glassGroup = new THREE.Group();
+        glassGroup.position.set(1.32, 0, -1.18);
+        const crystalMat = new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          roughness: 0.06,
+          metalness: 0.05,
+          transparent: true,
+          opacity: 0.36,
+          reflectivity: 0.95,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.05
+        });
+        const glassBase = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.018, 32), crystalMat);
+        glassBase.position.y = 0.01;
+        const glassStem = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.026, 0.64, 20), crystalMat);
+        glassStem.position.y = 0.34;
+        const glassBowl = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.14, 0.56, 32, 1, true), crystalMat);
+        glassBowl.position.y = 0.92;
+        // Burgundy wine inside glass
+        const wineFill = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.20, 0.145, 0.22, 28),
+          new THREE.MeshStandardMaterial({ color: 0x541a1d, roughness: 0.12, metalness: 0.1 })
+        );
+        wineFill.position.y = 0.77;
+        glassGroup.add(glassBase, glassStem, glassBowl, wineFill);
+        tableGroup.add(glassGroup);
+
+        // 7. Handcrafted Brass Candle Holder + Flickering Flame
+        const candleGroup = new THREE.Group();
+        candleGroup.position.set(-1.18, 0, -1.05);
+        const holderBase = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.24, 0.14, 32), brassMat);
+        holderBase.position.y = 0.07;
+        holderBase.castShadow = true;
+        const waxPillar = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.11, 0.11, 0.42, 28),
+          new THREE.MeshStandardMaterial({ color: 0xebe0cb, roughness: 0.7 })
+        );
+        waxPillar.position.y = 0.35;
+        waxPillar.castShadow = true;
+        const flameMesh = new THREE.Mesh(
+          new THREE.ConeGeometry(0.032, 0.12, 16),
+          new THREE.MeshBasicMaterial({ color: 0xffdf99 })
+        );
+        flameMesh.position.y = 0.62;
+        candleGroup.add(holderBase, waxPillar, flameMesh);
+        tableGroup.add(candleGroup);
+
+        // Soft Warm Glow Sprite around Flame
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 128;
+        glowCanvas.height = 128;
+        const gctx = glowCanvas.getContext('2d');
+        const gGrad = gctx.createRadialGradient(64, 64, 4, 64, 64, 64);
+        gGrad.addColorStop(0, 'rgba(255, 224, 150, 0.95)');
+        gGrad.addColorStop(0.35, 'rgba(220, 148, 66, 0.35)');
+        gGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        gctx.fillStyle = gGrad;
+        gctx.fillRect(0, 0, 128, 128);
+        const glowSprite = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: new THREE.CanvasTexture(glowCanvas),
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          })
+        );
+        glowSprite.scale.set(0.95, 0.95, 1);
+        glowSprite.position.set(-1.18, 0.65, -1.05);
+        tableGroup.add(glowSprite);
+
+        // 8. Lighting Rig
+        const ambientLight = new THREE.AmbientLight(0x3a3026, 0.65);
+        scene.add(ambientLight);
+
+        const keySpot = new THREE.SpotLight(0xffe1b5, 2.2, 14, Math.PI / 4, 0.55, 1.4);
+        keySpot.position.set(2.8, 4.8, 2.4);
+        keySpot.castShadow = true;
+        keySpot.shadow.mapSize.width = 1024;
+        keySpot.shadow.mapSize.height = 1024;
+        scene.add(keySpot);
+
+        const rimLight = new THREE.DirectionalLight(0xb99a64, 0.65);
+        rimLight.position.set(-3.2, 2.6, -2.5);
+        scene.add(rimLight);
+
+        const candleLight = new THREE.PointLight(0xffae52, 2.1, 6.5, 1.7);
+        candleLight.position.set(-1.18 + tableGroup.position.x, 0.42, -1.05);
+        candleLight.castShadow = true;
+        scene.add(candleLight);
+
+        // 9. Restrained Slow-Drifting Warm Dust Motes
+        const dustCount = 48;
+        const dustPos = new Float32Array(dustCount * 3);
+        for (let i = 0; i < dustCount; i++) {
+          dustPos[i * 3] = (Math.random() - 0.5) * 6.5;
+          dustPos[i * 3 + 1] = Math.random() * 2.4 + 0.1;
+          dustPos[i * 3 + 2] = (Math.random() - 0.5) * 4.5;
+        }
+        const dustGeo = new THREE.BufferGeometry();
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+        const dustMat = new THREE.PointsMaterial({
+          color: 0xe6c88a,
+          size: 0.025,
+          transparent: true,
+          opacity: 0.42,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const dustPoints = new THREE.Points(dustGeo, dustMat);
+        tableGroup.add(dustPoints);
+
+        // Interaction & Camera Choreography State
+        let mouseX = 0;
+        let mouseY = 0;
+        let scrollFactor = 0;
+        let entranceProgress = prefersReducedMotion ? 1 : 0;
+
+        window.addEventListener('mousemove', (e) => {
+          if (prefersReducedMotion) return;
+          mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+          mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        }, { passive: true });
+
+        window.addEventListener('scroll', () => {
+          const heroH = Math.max(window.innerHeight, 1);
+          scrollFactor = Math.min(Math.max(window.scrollY / heroH, 0), 1.2);
+        }, { passive: true });
+
+        window.addEventListener('resize', () => {
+          if (!container) return;
+          const w = container.clientWidth;
+          const h = container.clientHeight;
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+          const desktopNow = window.innerWidth >= 1024;
+          tableGroup.position.x = desktopNow ? 0.85 : 0;
+          candleLight.position.x = -1.18 + tableGroup.position.x;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+          requestAnimationFrame(animate);
+          const t = clock.getElapsedTime();
+
+          // Smooth cinematic camera entrance
+          if (entranceProgress < 1) {
+            entranceProgress = Math.min(entranceProgress + 0.009, 1);
+          }
+          const ease = 1 - Math.pow(1 - entranceProgress, 3);
+
+          // Target hero framing + scroll glide + subtle parallax
+          const baseCamX = 0.25 + mouseX * 0.28 + scrollFactor * 0.45;
+          const baseCamY = 2.05 - mouseY * 0.14 + scrollFactor * 0.85;
+          const baseCamZ = 4.25 - scrollFactor * 0.55;
+
+          const startX = 1.45;
+          const startY = 1.15;
+          const startZ = 2.85;
+
+          const targetX = startX + (baseCamX - startX) * ease;
+          const targetY = startY + (baseCamY - startY) * ease;
+          const targetZ = startZ + (baseCamZ - startZ) * ease;
+
+          camera.position.x += (targetX - camera.position.x) * 0.06;
+          camera.position.y += (targetY - camera.position.y) * 0.06;
+          camera.position.z += (targetZ - camera.position.z) * 0.06;
+
+          const lookX = tableGroup.position.x * 0.55;
+          camera.lookAt(lookX, -0.05 - scrollFactor * 0.25, -0.15);
+
+          // Realistic Candlelight Flicker
+          if (!prefersReducedMotion) {
+            const flicker = Math.sin(t * 7.2) * 0.12 + Math.sin(t * 13.7) * 0.07 + Math.cos(t * 3.1) * 0.05;
+            candleLight.intensity = 2.05 + flicker;
+            flameMesh.scale.y = 1 + flicker * 0.35;
+            glowSprite.scale.set(0.92 + flicker * 0.18, 0.92 + flicker * 0.18, 1);
+
+            // Subtle dust drift
+            const pos = dustGeo.attributes.position.array;
+            for (let i = 0; i < dustCount; i++) {
+              pos[i * 3 + 1] += 0.0009;
+              if (pos[i * 3 + 1] > 2.5) pos[i * 3 + 1] = 0.15;
+            }
+            dustGeo.attributes.position.needsUpdate = true;
+          }
+
+          renderer.render(scene, camera);
+        }
+
+        animate();
+      }
+
+      /* =======================================================================
+         RENDER SIGNATURE DISHES (Real Fine-Dining Photography + 3D Tilt)
+         ======================================================================= */
+      function renderSignatureDishes() {
+        const container = document.getElementById('signature-dishes-container');
+        if (!container) return;
+
+        container.innerHTML = signatureDishes.map((dish, idx) => {
+          const isReversed = idx % 2 === 1;
+          return `
+            <article class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center reveal">
+              <div class="lg:col-span-6 ${isReversed ? 'lg:order-2' : ''}">
+                <div class="tilt-frame relative border border-gold/25 p-3 bg-charcoal/70 rounded-sm overflow-hidden group cursor-pointer" data-open-tasting="${dish.id}">
+                  <div class="relative aspect-[16/11] w-full overflow-hidden rounded-sm bg-midnight">
+                    <img
+                      src="${dish.image}"
+                      alt="${dish.alt}"
+                      loading="lazy"
+                      onerror="this.onerror=null;this.src='https://placehold.co/1200x825/211F1A/B99A64?text=${encodeURIComponent(dish.name)}';"
+                      class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight/70 via-midnight/10 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-4 left-4 flex items-center space-x-2">
+                      <span class="px-2.5 py-1 bg-midnight/85 backdrop-blur-sm border border-gold/30 text-[10px] uppercase tracking-[0.2em] text-gold font-sans rounded-sm">
+                        ${dish.category}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-6 ${isReversed ? 'lg:order-1 lg:pr-6' : 'lg:pl-6'}">
+                <div class="flex items-center space-x-3 text-[11px] font-sans uppercase tracking-[0.24em] text-muted mb-3">
+                  <span class="w-2 h-2 rounded-full ${dish.diet === 'Vegetarian' ? 'bg-emerald-500/80' : 'bg-burgundy'}"></span>
+                  <span>${dish.diet}</span>
+                  <span class="text-gold/40">&middot;</span>
+                  <span class="text-gold">${dish.price}</span>
+                </div>
+
+                <h3 class="font-serif text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-ivory leading-tight">
+                  ${dish.name}
+                </h3>
+
+                <p class="mt-5 font-sans font-light text-sm sm:text-[15px] leading-relaxed text-muted max-w-lg">
+                  ${dish.shortDesc}
+                </p>
+
+                <div class="mt-8 flex items-center space-x-6">
+                  <button type="button" data-open-tasting="${dish.id}" class="inline-flex items-center space-x-3 px-6 py-3 border border-gold/65 text-gold hover:bg-gold hover:text-midnight transition-all duration-300 font-sans text-[11px] uppercase tracking-[0.2em] rounded-sm">
+                    <span>View Tasting Notes</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Controlled 3D Tilt on Hover
+        if (!prefersReducedMotion) {
+          container.querySelectorAll('.tilt-frame').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+              const rect = el.getBoundingClientRect();
+              const x = (e.clientX - rect.left) / rect.width - 0.5;
+              const y = (e.clientY - rect.top) / rect.height - 0.5;
+              el.style.transform = `perspective(900px) rotateX(${(-y * 5.5).toFixed(2)}deg) rotateY(${(x * 5.5).toFixed(2)}deg)`;
+            });
+            el.addEventListener('mouseleave', () => {
+              el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+            });
+          });
+        }
+
+        // Modal triggers
+        container.querySelectorAll('[data-open-tasting]').forEach(btn => {
+          btn.addEventListener('click', () => openTastingModal(btn.getAttribute('data-open-tasting')));
+        });
+      }
+
+      /* =======================================================================
+         TASTING NOTES MODAL LOGIC
+         ======================================================================= */
+      function openTastingModal(dishId) {
+        const dish = signatureDishes.find(d => d.id === dishId);
+        if (!dish) return;
+        currentTastingDishId = dish.id;
+
+        document.getElementById('tm-category').textContent = `${dish.category} · ${dish.diet}`;
+        document.getElementById('tasting-modal-title').textContent = dish.name;
+        document.getElementById('tm-price').textContent = dish.price;
+        document.getElementById('tm-description').textContent = dish.shortDesc;
+        document.getElementById('tm-profile').textContent = dish.profile;
+        document.getElementById('tm-pairing').textContent = dish.pairing;
+
+        const ingContainer = document.getElementById('tm-ingredients');
+        ingContainer.innerHTML = dish.ingredients.map(item => `
+          <span class="px-3 py-1 bg-midnight/80 border border-gold/25 text-[11px] font-sans text-ivory/90 rounded-sm">${item}</span>
+        `).join('');
+
+        updateTastingModalWishlistBtn();
+        const modal = document.getElementById('tasting-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function updateTastingModalWishlistBtn() {
+        const btn = document.getElementById('tm-wishlist-btn');
+        if (!btn || !currentTastingDishId) return;
+        const dish = signatureDishes.find(d => d.id === currentTastingDishId);
+        const saved = wishlist.has(dish.name);
+        btn.textContent = saved ? 'Saved in Wishlist ✓' : 'Save to Wishlist';
+      }
+
+      function closeTastingModal() {
+        const modal = document.getElementById('tasting-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      /* =======================================================================
+         INTERACTIVE DIGITAL MENU + WISHLIST
+         ======================================================================= */
+      function renderMenuTabs() {
+        const tabContainer = document.getElementById('menu-category-tabs');
+        if (!tabContainer) return;
+        tabContainer.innerHTML = menuCategories.map(cat => {
+          const active = cat === activeCategory;
+          return `
+            <button type="button" role="tab" aria-selected="${active}" data-cat="${cat}"
+              class="menu-cat-tab pb-2 font-sans text-xs uppercase tracking-[0.16em] transition-colors border-b-2 ${
+                active ? 'border-midnight text-midnight font-medium' : 'border-transparent text-espresso/75 hover:text-midnight'
+              }">
+              ${cat}
+            </button>
+          `;
+        }).join('');
+
+        tabContainer.querySelectorAll('.menu-cat-tab').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeCategory = btn.getAttribute('data-cat');
+            renderMenuTabs();
+            renderMenuGrid();
+          });
+        });
+      }
+
+      function renderMenuGrid() {
+        const grid = document.getElementById('menu-items-grid');
+        const emptyState = document.getElementById('menu-empty-state');
+        const countEl = document.getElementById('menu-results-count');
+        if (!grid) return;
+
+        const filtered = menuItems.filter(item => {
+          const matchCat =
+            activeCategory === 'All' ||
+            item.category === activeCategory ||
+            (activeCategory === 'Vegetarian' && item.tags.includes('Vegetarian')) ||
+            (activeCategory === 'Non-Vegetarian' && item.tags.includes('Non-Vegetarian'));
+          const matchDiet = activeDiet === 'All' || item.tags.includes(activeDiet);
+          const q = searchQuery.trim().toLowerCase();
+          const matchQuery = !q || item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q) || item.category.toLowerCase().includes(q);
+          return matchCat && matchDiet && matchQuery;
+        });
+
+        countEl.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? 'selection' : 'selections'}`;
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '';
+          emptyState.classList.remove('hidden');
+          return;
+        }
+        emptyState.classList.add('hidden');
+
+        grid.innerHTML = filtered.map(item => {
+          const isSaved = wishlist.has(item.name);
+          return `
+            <div class="flex flex-col justify-between pb-6 border-b border-bronze/20 ${!item.available ? 'opacity-60' : ''}">
+              <div>
+                <div class="flex items-start justify-between gap-4">
+                  <h3 class="font-serif text-2xl text-midnight leading-snug">${item.name}</h3>
+                  <div class="flex items-center space-x-3 shrink-0 pt-1">
+                    <span class="font-serif text-xl text-midnight">${item.price}</span>
+                    <button type="button" data-wish="${item.name}" aria-label="Toggle wishlist for ${item.name}"
+                      class="p-1.5 rounded-sm transition-colors ${isSaved ? 'text-burgundy' : 'text-bronze/60 hover:text-midnight'}">
+                      <svg class="w-4 h-4" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p class="mt-2 font-sans font-light text-xs sm:text-[13px] leading-relaxed text-espresso">
+                  ${item.desc}
+                </p>
+              </div>
+              <div class="mt-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap gap-1.5">
+                  ${item.tags.map(t => `<span class="px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] font-sans border border-bronze/30 text-bronze rounded-sm">${t}</span>`).join('')}
+                </div>
+                <span class="font-sans text-[10px] uppercase tracking-[0.16em] ${item.available ? 'text-emerald-800' : 'text-burgundy'}">
+                  ${item.available ? 'Available Tonight' : 'Sold Out'}
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        grid.querySelectorAll('[data-wish]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            toggleWishlist(btn.getAttribute('data-wish'));
+          });
+        });
+      }
+
+      function toggleWishlist(name) {
+        if (wishlist.has(name)) {
+          wishlist.delete(name);
+        } else {
+          wishlist.add(name);
+        }
+        updateWishlistUI();
+        renderMenuGrid();
+        updateTastingModalWishlistBtn();
+      }
+
+      function updateWishlistUI() {
+        const count = wishlist.size;
+        const badges = [document.getElementById('nav-wishlist-badge'), document.getElementById('mobile-wishlist-badge')];
+        badges.forEach(b => {
+          if (!b) return;
+          b.textContent = count;
+          b.classList.toggle('hidden', count === 0);
+        });
+        const menuBadge = document.getElementById('menu-wishlist-count');
+        if (menuBadge) menuBadge.textContent = count;
+
+        const listEl = document.getElementById('wishlist-items-list');
+        if (!listEl) return;
+        if (count === 0) {
+          listEl.innerHTML = `<p class="font-serif italic text-lg text-muted py-10 text-center">No dishes saved yet. Tap the heart icon on any menu selection.</p>`;
+          return;
+        }
+        listEl.innerHTML = Array.from(wishlist).map(name => {
+          const item = menuItems.find(m => m.name === name) || signatureDishes.find(s => s.name === name);
+          return `
+            <div class="flex items-center justify-between gap-3 p-4 bg-midnight/70 border border-gold/20 rounded-sm">
+              <div>
+                <p class="font-serif text-lg text-ivory">${name}</p>
+                <p class="font-sans text-xs text-gold mt-0.5">${item ? item.price : ''}</p>
+              </div>
+              <button type="button" data-remove-wish="${name}" class="text-xs font-sans uppercase tracking-wider text-muted hover:text-gold">Remove</button>
+            </div>
+          `;
+        }).join('');
+
+        listEl.querySelectorAll('[data-remove-wish]').forEach(btn => {
+          btn.addEventListener('click', () => toggleWishlist(btn.getAttribute('data-remove-wish')));
+        });
+      }
+
+      /* =======================================================================
+         DINING EXPERIENCES SWITCHER (Real Fine-Dining Hospitality Photography)
+         ======================================================================= */
+      function initExperiences() {
+        const tabs = document.querySelectorAll('.exp-tab');
+        const panel = document.getElementById('experience-panel');
+        const photoEl = document.getElementById('experience-photo');
+        let currentIdx = 0;
+
+        function setExperience(idx) {
+          currentIdx = idx;
+          const exp = experiencesData[idx];
+          if (!exp || !panel) return;
+
+          tabs.forEach((tab, i) => {
+            const isActive = i === idx;
+            tab.classList.toggle('active', isActive);
+            const h3 = tab.querySelector('h3');
+            const label = tab.querySelector('span:first-child');
+            const ind = tab.querySelector('.exp-indicator');
+            if (h3) {
+              h3.classList.toggle('text-ivory', isActive);
+              h3.classList.toggle('text-ivory/80', !isActive);
+            }
+            if (label) {
+              label.classList.toggle('text-gold', isActive);
+              label.classList.toggle('text-muted', !isActive);
+            }
+            if (ind) {
+              ind.classList.toggle('w-6', isActive);
+              ind.classList.toggle('w-0', !isActive);
+            }
+          });
+
+          panel.style.opacity = '0.25';
+          setTimeout(() => {
+            document.getElementById('exp-subtitle').textContent = exp.subtitle;
+            document.getElementById('exp-title').textContent = exp.title;
+            document.getElementById('exp-desc').textContent = exp.desc;
+            document.getElementById('exp-capacity').textContent = exp.capacity;
+            document.getElementById('exp-lighting-mood').textContent = exp.lighting;
+            if (photoEl) {
+              photoEl.src = exp.image;
+              photoEl.alt = `${exp.title} at MAISON ÉLARA`;
+            }
+            panel.style.opacity = '1';
+          }, 160);
+        }
+
+        tabs.forEach((tab, i) => {
+          tab.addEventListener('click', () => setExperience(i));
+        });
+
+        document.getElementById('exp-reserve-btn').addEventListener('click', () => {
+          const prefSelect = document.getElementById('res-preference');
+          if (prefSelect) prefSelect.value = experiencesData[currentIdx].prefValue;
+          document.getElementById('reservations').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+
+      /* =======================================================================
+         CURATED MASONRY GALLERY + FULLSCREEN LIGHTBOX (Real Photography)
+         ======================================================================= */
+      function initGallery() {
+        const grid = document.getElementById('gallery-grid');
+        if (!grid) return;
+
+        grid.innerHTML = galleryData.map((item, idx) => `
+          <button type="button" data-gal-idx="${idx}" class="break-inside-avoid w-full group text-left border border-gold/20 bg-charcoal/60 p-3 rounded-sm hover:border-gold/60 transition-all duration-300 focus:outline-none block">
+            <div class="relative ${item.aspect} w-full overflow-hidden rounded-sm bg-midnight">
+              <img
+                src="${item.image}"
+                alt="${item.title} — ${item.caption}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/1000x800/211F1A/B99A64?text=${encodeURIComponent(item.title)}';"
+                class="editorial-photo w-full h-full object-cover group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 via-midnight/10 to-transparent pointer-events-none"></div>
+              <div class="absolute bottom-3.5 left-3.5 right-3.5 flex items-end justify-between">
+                <div>
+                  <p class="font-sans text-[9px] uppercase tracking-[0.24em] text-gold">${item.tag}</p>
+                  <p class="font-serif text-lg text-ivory">${item.title}</p>
+                </div>
+                <span class="text-gold/80 text-xs group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </div>
+            </div>
+          </button>
+        `).join('');
+
+        grid.querySelectorAll('[data-gal-idx]').forEach(btn => {
+          btn.addEventListener('click', () => openLightbox(Number(btn.getAttribute('data-gal-idx'))));
+        });
+      }
+
+      function openLightbox(idx) {
+        currentLightboxIdx = (idx + galleryData.length) % galleryData.length;
+        const item = galleryData[currentLightboxIdx];
+        const modal = document.getElementById('lightbox-modal');
+        const imgEl = document.getElementById('lightbox-img');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        if (imgEl) {
+          imgEl.src = item.image;
+          imgEl.alt = `${item.title} — ${item.caption}`;
+        }
+        document.getElementById('lightbox-tag').textContent = `${item.tag} · ${currentLightboxIdx + 1} / ${galleryData.length}`;
+        document.getElementById('lightbox-title').textContent = item.title;
+        document.getElementById('lightbox-caption').textContent = item.caption;
+      }
+
+      function closeLightbox() {
+        const modal = document.getElementById('lightbox-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      /* =======================================================================
+         RESERVATION FORM VALIDATION & HONEST PHASE 2 PREVIEW
+         ======================================================================= */
+      function initReservationForm() {
+        const form = document.getElementById('reservation-form');
+        const dateInput = document.getElementById('res-date');
+        if (dateInput) {
+          const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+          dateInput.min = tomorrow;
+          dateInput.value = tomorrow;
+        }
+
+        // Time slot buttons
+        const timeHidden = document.getElementById('res-time');
+        document.querySelectorAll('.time-slot').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.time-slot').forEach(b => {
+              b.classList.remove('active', 'border-gold', 'bg-gold', 'text-midnight', 'font-medium');
+              b.classList.add('border-gold/25', 'text-ivory/80');
+            });
+            btn.classList.add('active', 'border-gold', 'bg-gold', 'text-midnight', 'font-medium');
+            btn.classList.remove('border-gold/25', 'text-ivory/80');
+            timeHidden.value = btn.getAttribute('data-time');
+          });
+        });
+
+        function showFieldError(input, msg) {
+          const err = input.parentElement.querySelector('.error-msg');
+          if (err) {
+            err.textContent = msg;
+            err.classList.toggle('hidden', !msg);
+          }
+          input.classList.toggle('border-rose-400', Boolean(msg));
+        }
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nameEl = document.getElementById('res-name');
+          const emailEl = document.getElementById('res-email');
+          const phoneEl = document.getElementById('res-phone');
+          const dateEl = document.getElementById('res-date');
+          let valid = true;
+
+          if (!nameEl.value.trim() || nameEl.value.trim().length < 2) {
+            showFieldError(nameEl, 'Please enter your full name.');
+            valid = false;
+          } else showFieldError(nameEl, '');
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
+            showFieldError(emailEl, 'Please enter a valid email address.');
+            valid = false;
+          } else showFieldError(emailEl, '');
+
+          if (!/^[+\d\s()-]{8,}$/.test(phoneEl.value.trim())) {
+            showFieldError(phoneEl, 'Please enter a valid phone number.');
+            valid = false;
+          } else showFieldError(phoneEl, '');
+
+          if (!dateEl.value) {
+            showFieldError(dateEl, 'Please select a dining date.');
+            valid = false;
+          } else showFieldError(dateEl, '');
+
+          if (!valid) return;
+
+          // Populate Honest Phase 2 Preview Modal
+          const summaryBox = document.getElementById('res-summary-box');
+          const guestsVal = document.getElementById('res-guests').value;
+          const prefVal = document.getElementById('res-preference').value;
+          const reqVal = document.getElementById('res-requests').value.trim() || 'None specified';
+
+          summaryBox.innerHTML = `
+            <div class="flex justify-between border-b border-gold/15 pb-2"><span class="text-muted">Guest</span><span class="text-ivory">${nameEl.value.trim()}</span></div>
+            <div class="flex justify-between border-b border-gold/15 pb-2"><span class="text-muted">Contact</span><span class="text-ivory">${emailEl.value.trim()} &middot; ${phoneEl.value.trim()}</span></div>
+            <div class="flex justify-between border-b border-gold/15 pb-2"><span class="text-muted">Date &amp; Time</span><span class="text-gold">${dateEl.value} at ${timeHidden.value}</span></div>
+            <div class="flex justify-between border-b border-gold/15 pb-2"><span class="text-muted">Party Size</span><span class="text-ivory">${guestsVal} ${guestsVal === '1' ? 'Guest' : 'Guests'}</span></div>
+            <div class="flex justify-between border-b border-gold/15 pb-2"><span class="text-muted">Dining Preference</span><span class="text-ivory">${prefVal}</span></div>
+            <div class="flex justify-between"><span class="text-muted">Special Requests</span><span class="text-ivory text-right max-w-[60%]">${reqVal}</span></div>
+          `;
+
+          const modal = document.getElementById('reservation-modal');
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        });
+      }
+
+      /* =======================================================================
+         NAVIGATION, SCROLL PROGRESS, INTERSECTION OBSERVER & MODALS
+         ======================================================================= */
+      function initChromeAndInteractions() {
+        const nav = document.getElementById('main-nav');
+        const progressBar = document.getElementById('scroll-progress-bar');
+
+        window.addEventListener('scroll', () => {
+          const scrollY = window.scrollY;
+          const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+          progressBar.style.width = `${Math.min((scrollY / maxScroll) * 100, 100)}%`;
+
+          if (scrollY > 40) {
+            nav.classList.add('bg-midnight/92', 'backdrop-blur-md', 'border-gold/20');
+            nav.classList.remove('border-transparent');
+          } else {
+            nav.classList.remove('bg-midnight/92', 'backdrop-blur-md', 'border-gold/20');
+            nav.classList.add('border-transparent');
+          }
+        }, { passive: true });
+
+        // Mobile Drawer
+        const drawer = document.getElementById('mobile-drawer');
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        const closeBtn = document.getElementById('mobile-menu-close');
+        const mobileLinks = drawer.querySelectorAll('.mobile-nav-link');
+
+        function setDrawer(open) {
+          toggleBtn.setAttribute('aria-expanded', String(open));
+          drawer.setAttribute('aria-hidden', String(!open));
+          drawer.classList.toggle('opacity-0', !open);
+          drawer.classList.toggle('pointer-events-none', !open);
+          mobileLinks.forEach((link, idx) => {
+            setTimeout(() => {
+              link.classList.toggle('opacity-0', !open);
+              link.classList.toggle('translate-y-4', !open);
+            }, open ? idx * 55 + 80 : 0);
+          });
+        }
+
+        toggleBtn.addEventListener('click', () => setDrawer(true));
+        closeBtn.addEventListener('click', () => setDrawer(false));
+        drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setDrawer(false)));
+
+        // Menu Search & Dietary Filters
+        document.getElementById('menu-search').addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderMenuGrid();
+        });
+
+        document.querySelectorAll('.diet-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            activeDiet = pill.getAttribute('data-diet');
+            document.querySelectorAll('.diet-pill').forEach(p => {
+              const isAct = p === pill;
+              p.classList.toggle('bg-midnight', isAct);
+              p.classList.toggle('text-ivory', isAct);
+              p.classList.toggle('border-midnight', isAct);
+              p.classList.toggle('text-espresso', !isAct);
+              p.classList.toggle('border-bronze/35', !isAct);
+            });
+            renderMenuGrid();
+          });
+        });
+
+        document.getElementById('reset-menu-filters').addEventListener('click', () => {
+          activeCategory = 'All';
+          activeDiet = 'All';
+          searchQuery = '';
+          document.getElementById('menu-search').value = '';
+          document.querySelectorAll('.diet-pill').forEach((p, idx) => {
+            const isAct = idx === 0;
+            p.classList.toggle('bg-midnight', isAct);
+            p.classList.toggle('text-ivory', isAct);
+            p.classList.toggle('border-midnight', isAct);
+            p.classList.toggle('text-espresso', !isAct);
+            p.classList.toggle('border-bronze/35', !isAct);
+          });
+          renderMenuTabs();
+          renderMenuGrid();
+        });
+
+        // Modals Close Handlers
+        document.getElementById('close-tasting-modal').addEventListener('click', closeTastingModal);
+        document.getElementById('tm-reserve-link').addEventListener('click', closeTastingModal);
+        document.getElementById('tm-wishlist-btn').addEventListener('click', () => {
+          const dish = signatureDishes.find(d => d.id === currentTastingDishId);
+          if (dish) toggleWishlist(dish.name);
+        });
+
+        const resModal = document.getElementById('reservation-modal');
+        const closeRes = () => { resModal.classList.add('hidden'); resModal.classList.remove('flex'); };
+        document.getElementById('close-res-modal').addEventListener('click', closeRes);
+        document.getElementById('ack-res-modal').addEventListener('click', closeRes);
+
+        const wishModal = document.getElementById('wishlist-modal');
+        const openWish = () => { wishModal.classList.remove('hidden'); wishModal.classList.add('flex'); };
+        const closeWish = () => { wishModal.classList.add('hidden'); wishModal.classList.remove('flex'); };
+        document.getElementById('open-wishlist-btn').addEventListener('click', openWish);
+        document.getElementById('mobile-wishlist-btn').addEventListener('click', openWish);
+        document.getElementById('menu-wishlist-trigger').addEventListener('click', openWish);
+        document.getElementById('close-wishlist-modal').addEventListener('click', closeWish);
+        document.getElementById('wishlist-reserve-cta').addEventListener('click', closeWish);
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-prev').addEventListener('click', () => openLightbox(currentLightboxIdx - 1));
+        document.getElementById('lightbox-next').addEventListener('click', () => openLightbox(currentLightboxIdx + 1));
+
+        // Keyboard Accessibility (Escape & Lightbox Arrows)
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeTastingModal();
+            closeRes();
+            closeWish();
+            closeLightbox();
+            setDrawer(false);
+          }
+          if (!document.getElementById('lightbox-modal').classList.contains('hidden')) {
+            if (e.key === 'ArrowRight') openLightbox(currentLightboxIdx + 1);
+            if (e.key === 'ArrowLeft') openLightbox(currentLightboxIdx - 1);
+          }
+        });
+
+        // Newsletter Form
+        const newsForm = document.getElementById('newsletter-form');
+        const newsEmail = document.getElementById('newsletter-email');
+        const newsFeedback = document.getElementById('newsletter-feedback');
+        newsForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsEmail.value.trim())) {
+            newsFeedback.textContent = 'Please enter a valid email address.';
+            newsFeedback.className = 'text-xs font-sans text-rose-300';
+            return;
+          }
+          newsFeedback.textContent = 'Thank you. Your address is noted for our private dispatches (Phase 2 preview).';
+          newsFeedback.className = 'text-xs font-sans text-gold';
+          newsEmail.value = '';
+        });
+
+        // Scroll Reveal IntersectionObserver
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      }
+
+      /* =======================================================================
+         BOOTSTRAP ON WINDOW LOAD
+         ======================================================================= */
+      window.onload = function () {
+        // Animate Preloader Bar then reveal hero
+        const bar = document.getElementById('preloader-bar');
+        const preloader = document.getElementById('preloader');
+        if (bar) {
+          requestAnimationFrame(() => { bar.style.width = '100%'; });
+        }
+
+        // Render all sections & real photography components
+        renderSignatureDishes();
+        renderMenuTabs();
+        renderMenuGrid();
+        updateWishlistUI();
+        initExperiences();
+        initGallery();
+        initReservationForm();
+        initChromeAndInteractions();
+        initHero3D();
+
+        // Fade out preloader smoothly
+        setTimeout(() => {
+          if (preloader) {
+            preloader.classList.add('hidden-preloader');
+            preloader.setAttribute('aria-hidden', 'true');
+          }
+          document.body.classList.add('loaded');
+        }, prefersReducedMotion ? 150 : 950);
+      };
+    })();
+  </script>
+</body>
+</html>
